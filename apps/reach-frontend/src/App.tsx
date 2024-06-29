@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
-import './App.css'
+import React from 'react';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const string = "Hello this is working";
 
   return (
     <>
       <div className='bg-red-400 border-spacing-1'>
-        Hello this is working
+        {string}
       </div>
     </>
   )
