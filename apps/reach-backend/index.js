@@ -19,11 +19,13 @@ db.once('open', async () => {
   const app = setupExpress();
   const server = http.createServer(app);
 
-  const socketService = new SocketService(server);
+  const socketService = new SocketService();
+  socketService._io.attach(server);
   
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}!`);
   });
 
   console.log(`Connected to DB!`);
+  socketService.initListeners();
 });

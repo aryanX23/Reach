@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
-    fullName: {
+    userId: {
+        type: String,
+        required: true,
+    },
+    name: {
         type: String,
         required: true,
     },
@@ -13,8 +17,9 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    token: {
-        type: String
+    friend_list: {
+        type: Array,
+        default: []
     }
 });
 
