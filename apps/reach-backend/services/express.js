@@ -13,7 +13,7 @@ module.exports = () => {
   app.use(
     cors({
       credentials: true,
-      origin: [process.env.ORIGIN_URL],
+      origin: [ORIGIN_URL],
       exposedHeaders: ['authorization', 'refresh-token'],
     })
   );
@@ -27,10 +27,10 @@ module.exports = () => {
 
   app.use(async (req, res, next) => {
 
-    const unVerifiedRoutes =
-      req.path.includes("/products") ||
-      req.path.includes("/api/payments/webhooks") ||
-      req.path.includes("/users");
+    const unVerifiedRoutes = req.path.includes("/users/login") ||
+      req.path.includes("/users/register") ||
+      req.path.includes("/users/login");
+
     if (unVerifiedRoutes) {
       return next();
     }

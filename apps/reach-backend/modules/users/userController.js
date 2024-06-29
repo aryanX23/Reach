@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const { User } = require('../../models');
+const { JWT_SECRET_KEY } = process.env || {};
 
 async function registerUser(req, res, next) {
   const { fullName, email, password } = req.body;
@@ -43,7 +44,6 @@ async function loginUser(req, res) {
           userId: user._id,
           email: user.email
         }
-        const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || "hello this is a test:)";
         const token = jwt.sign(payload, JWT_SECRET_KEY);
         await User.updateOne({ _id: user._id }, {
           $set: { token }
