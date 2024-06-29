@@ -1,8 +1,10 @@
-const bcrypt = require('bcryptjs');
+const Cryptr = require('cryptr');
 const jwt = require('jsonwebtoken');
 
 const { User } = require('../../models');
-const { JWT_SECRET_KEY } = process.env || {};
+const { JWT_SECRET_KEY, ENCRYPT_KEY } = process.env || {};
+
+const cryptr = new Cryptr(ENCRYPT_KEY);
 
 async function registerUser(req, res, next) {
   const { fullName, email, password } = req.body;
@@ -13,11 +15,11 @@ async function registerUser(req, res, next) {
     }
     else {
       const newUser = new User({ fullName, email });
-      bcrypt.hash(password, 10, (err, hashedPass) => {
-        newUser.set('password', hashedPass);
-        newUser.save();
-        next();
-      });
+      // bcrypt.hash(password, 10, (err, hashedPass) => {
+      //   newUser.set('password', hashedPass);
+      //   newUser.save();
+      //   next();
+      // });
       res.status(200).send("User Registration Successful!");
     }
   }
@@ -35,7 +37,8 @@ async function loginUser(req, res) {
       res.status(400).send({ response: "Incorrect Email!" });
     }
     else {
-      const isValid = await bcrypt.compare(password, user.password);
+      // const isValid = await bcrypt.compare(password, user.password);
+      const isValid = false;
       if (!isValid) {
         res.status(400).send({ response: "Incorrect password!" });
       }
