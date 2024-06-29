@@ -2,14 +2,14 @@ const express = require('express');
 
 const masterRouter = express.Router();
 
-const userRoutes = require('./subRoutes/userRoutes');
-const productRoutes = require('./subRoutes/productRoutes');
-const paymentRoutes = require('./subRoutes/paymentRoutes.js');
+const conversationRoutes = require('./modules/conversations/conversationRoutes.js');
+const messageRoutes = require('./modules/messages/messageRoutes.js');
+const userRoutes = require('./modules/users/userRoutes.js');
 
 module.exports = () => masterRouter
   .use('/users', userRoutes())
-  .use('/products', productRoutes())
-  .use('/payments', paymentRoutes())
+  .use('/messages', messageRoutes())
+  .use('/conversations', conversationRoutes())
   .get('/', (req, res) => {
     console.log("All routes are online!");
     res.status(200).send("Server is Up and Running!");
