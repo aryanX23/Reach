@@ -1,10 +1,9 @@
 export default function AuthorizedRoutes(props) {
 
   return (
-    <>
-      <div>
-        User Logged In!
-        {/* <Routes>
+    <div>
+      User Logged In!
+      {/* <Routes>
           <Route path="*" element={<Navigate to="/dashboard" />} />
           <Route
             path="/dashboard"
@@ -13,7 +12,6 @@ export default function AuthorizedRoutes(props) {
             }
           ></Route>
         </Routes> */}
-      </div>
-    </>
+    </div>
   );
 }

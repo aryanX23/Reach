@@ -1,0 +1,249 @@
+.signInBody {
+  height: 100%;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow: scroll;
+}
+
+.signInBody::-webkit-scrollbar {
+  display: none;
+  overflow: scroll;
+}
+
+.signInbg {
+  min-height: 100%;
+  min-width: 100%;
+  width: 100%;
+  height: auto;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.headerBody {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitle {
+  font-size: 3rem;
+  color: black;
+  font-weight: 800;
+  margin-left: 50px;
+  padding: 1em;
+}
+
+.actionButton {
+  width: 130px;
+  height: 50px;
+  background: transparent;
+  border: 2px solid black;
+  outline: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1em;
+  color: black;
+  font-weight: 600;
+  transition: 0.5s;
+  margin-right: 80px;
+}
+
+.actionButton:hover {
+  background: black;
+  color: white;
+}
+
+.actionButton:active {
+  scale: 0.95;
+}
+
+.formWrapper {
+  position: relative;
+  width: 400px;
+  /* height:440px; */
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: 100px;
+  margin-top: 100px;
+  padding: 40px;
+  margin-bottom: 100px;
+}
+
+.form-box {
+  width: 100%;
+}
+
+.form-box h2 {
+  font-size: 2em;
+  color: black;
+  text-align: center;
+}
+
+.input-box {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  border-bottom: 2px solid black;
+  margin: 30px 0;
+}
+
+.input-box label {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  transform: translateY(-50%);
+  font-size: 1em;
+  color: black;
+  font-weight: 500;
+  pointer-events: none;
+  transition: 0.5s;
+}
+
+.input-box input:focus~label,
+.input-box input:not(:placeholder-shown)~label {
+  top: -5px;
+}
+
+.input-box input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1em;
+  font-weight: 600;
+  color: black;
+  padding: 0 35px 0 5px;
+}
+
+.input-box .icon {
+  position: absolute;
+  right: 8px;
+  font-size: 1.2em;
+  color: black;
+  line-height: 57px;
+}
+
+.remember-forgot {
+  font-size: 1em;
+  color: black;
+  font-weight: 500;
+  margin: -15px 0 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.remember-forgot label input {
+  accent-color: black;
+  margin-right: 3px;
+}
+
+.remember-forgot a {
+  color: black;
+  text-decoration: none;
+  margin-left: 5px;
+}
+
+.remember-forgot a:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  width: 100%;
+  height: 45px;
+  background: black;
+  border: none;
+  outline: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  color: white;
+  font-weight: 600;
+}
+
+.btn:active {
+  scale: 0.99;
+}
+
+.login-register {
+  font-size: 1em;
+  color: black;
+  text-align: center;
+  font-weight: 500;
+  margin: 25px 0 10px;
+}
+
+.login-register p a {
+  text-decoration: none;
+  color: black;
+  margin-left: 5px;
+}
+
+.login-register p a:hover {
+  text-decoration: underline;
+}
+
+.dialogBox {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  z-index: 100;
+  width: 300px;
+  height: 300px;
+  position: absolute;
+  top: 30vh;
+  left: 43vw;
+  border-radius: 10px;
+}
+
+.dialogInner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.dialogInner span {
+  color: white;
+  font-weight: 500;
+  font-size: 1.2em;
+}
+
+.dialogInner .icon {
+  width: 200px !important;
+  height: 200px !important;
+}
+
+
+@media screen and (max-width: 1160px) {
+
+  .signInbg {
+    position: fixed;
+    right: 0%;
+    bottom: 0%;
+    width: 1160px;
+  }
+}
+
+@media screen and (max-width: 670px) {
+
+  .signInbg {
+    position: fixed;
+    left: -500px;
+    bottom: 0%;
+    width: 1160px;
+  }
+}
