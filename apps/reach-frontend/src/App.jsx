@@ -1,6 +1,5 @@
-import { BrowserRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'sonner';
 
 import AuthorizedRoutes from "./routes/AuthorizedRoutes";
 import UnauthorizedRoutes from "./routes/UnauthorizedRoutes";
@@ -10,15 +9,13 @@ function App() {
   console.log(authState)
 
   return (
-    <>
-      <BrowserRouter>
-        <ToastContainer />
-        {
-          authState ? <AuthorizedRoutes /> :
-            <UnauthorizedRoutes />
-        }
-      </BrowserRouter>
-    </>
+    <div>
+      <Toaster />
+      {
+        authState ? <AuthorizedRoutes /> :
+          <UnauthorizedRoutes />
+      }
+    </div>
   )
 }
 

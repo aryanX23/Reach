@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { IonIcon } from '@ionic/react';
 import { mail, lockClosed, person, closeCircle, checkmarkCircle, alertCircle } from 'ionicons/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { showErrorToast, showSuccessToast } from '../../utils/ToastUtil/toastUtil';
 
 import { registerUser } from '../../store/slices/loginSlices';
 
@@ -28,16 +28,7 @@ export default function Register() {
           password: "",
           confirmPassword: ""
         }));
-        toast.error("Passwords do not Match!", {
-          position: "top-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        showErrorToast("Passwords do not Match!");
       }
       else {
         const bodyFormData = {
@@ -49,27 +40,21 @@ export default function Register() {
         await dispatch(registerUser(bodyFormData))
           .then(res => res.payload)
           .then(res => {
-            console.log("------> ", res);
+            const { status = false, message } = res || {};
+            if (status === "success") {
+              setUserDetails(prev => ({
+                fullName: "",
+                email: "",
+                password: "",
+                confirmPassword: ""
+              }));
+              ref.current.checked = false;
+              showSuccessToast("User Registered Successfully!");
+              navigate("/login");
+            } else {
+              showErrorToast(message || "Something went wrong, Pls try again!");
+            }
           });
-
-        setUserDetails(prev => ({
-          fullName: "",
-          email: "",
-          password: "",
-          confirmPassword: ""
-        }));
-        ref.current.checked = false;
-        toast.success("User Registered Successfully!", {
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        navigate("/login");
       }
     } catch (error) {
       console.log(error);
@@ -96,7 +81,7 @@ export default function Register() {
         alt="background"
         className="signInbg"
       />
-      
+
       <div className="headerBody">
         <div className="headerTitle">
           <span>Reach</span>
@@ -115,6 +100,7 @@ export default function Register() {
       <div className="formWrapper">
         <div className="form-box">
           <h2>Register</h2>
+          
           <form onSubmit={handleRegister}>
             <div className="input-box">
               <span className="icon">

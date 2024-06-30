@@ -1,0 +1,33 @@
+/* toastUtil.css */
+.sonner-toast {
+  border-radius: 10px !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  color: #000 !important;
+}
+
+/* Success Toast */
+.sonner-toast-success {
+  background: rgba(144, 238, 144, 0.3) !important;
+  /* Light green with transparency */
+}
+
+/* Error Toast */
+.sonner-toast-error {
+  background: rgba(255, 99, 71, 0.3) !important;
+  /* Light red with transparency */
+}
+
+/* Info Toast */
+.sonner-toast-info {
+  background: rgba(173, 216, 230, 0.3) !important;
+  /* Light blue with transparency */
+}
+
+/* Warning Toast */
+.sonner-toast-warning {
+  background: rgba(255, 255, 102, 0.3) !important;
+  /* Light yellow with transparency */
+}
