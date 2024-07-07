@@ -37,6 +37,8 @@ async function authenticateUser(req, res, next) {
 
     const { isTokenRefreshed = false, accessTokenActive = false } = tokenDetails;
 
+    console.log(tokenDetails);
+
     if (isTokenRefreshed) {
       const newAccessToken = generateJwt({ userId: tokenDetails?.userId, email: tokenDetails?.email }, ACCESS_TOKEN_SECRET, '1h');
       req["userDetails"] = {
@@ -45,6 +47,7 @@ async function authenticateUser(req, res, next) {
       };
 
       res.setHeader('authorization', 'Bearer ' + newAccessToken);
+      console.log("refershed!");
     } else if (!accessTokenActive) {
       res.setHeader('refresh-token', false);
     }

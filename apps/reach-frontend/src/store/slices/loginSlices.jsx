@@ -71,7 +71,7 @@ const loginSlice = createSlice({
       return newState;
     },
     [loginUser.fulfilled]: (state, action) => {
-      const { ACCESS_TOKEN: accessToken = '', REFRESH_TOKEN: refreshToken = '', userId = '', name = '', status = false } = action?.payload?.data || {};
+      const { ACCESS_TOKEN: accessToken = '', REFRESH_TOKEN: refreshToken = '', userId = '', name = '', status = false } = action?.payload || {};
       if (status === "success") {
 
         state['loginDetails'] = {
@@ -103,7 +103,7 @@ const loginSlice = createSlice({
       return newState;
     },
     [registerUser.fulfilled]: (state, action) => {
-      const { status = false, message = "" } = action?.payload?.data || {};
+      const { status = false, message = "" } = action?.payload || {};
       if (status === "success") {
 
         state['loginDetails'] = {

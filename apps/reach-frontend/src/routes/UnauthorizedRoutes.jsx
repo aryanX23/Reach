@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+
 import Register from "../modules/register/Register";
+import Login from "../modules/login/Login";
 
 export default function UnauthorizedRoutes(props) {
 
@@ -14,12 +16,12 @@ export default function UnauthorizedRoutes(props) {
           }
         />
 
-        {/* <Route
+        <Route
             path="/login"
             element={
-              <></>
+              <Login/>
             }
-          ></Route> */}
+          ></Route>
       </Routes>
     </div>
   );
