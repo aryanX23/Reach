@@ -84,6 +84,7 @@ export default function Register() {
 
       <div className="headerBody">
         <div className="headerTitle">
+          <img className='websiteLogo' src='/images/logo2.png' alt='logo' />
           <span>Reach</span>
         </div>
         <div>

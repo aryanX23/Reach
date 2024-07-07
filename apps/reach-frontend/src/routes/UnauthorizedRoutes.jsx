@@ -8,7 +8,7 @@ export default function UnauthorizedRoutes(props) {
   return (
     <div>
       <Routes>
-        <Route path="*" element={<Navigate to="/register" />} />
+        <Route path="*" element={<Navigate to="/login" />} />
         <Route
           exact path="/register"
           element={
