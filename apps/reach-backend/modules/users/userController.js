@@ -88,14 +88,21 @@ const handleFriendRequest = async (req, res) => {
     const userDetails = await User.findOne({ userId: id }).lean() || {};
     if (isEmpty(userDetails)) {
       throw {
-        code: 'INVALID_ARGUMENTS',
+        code: 'USER_DOES_NOT_EXIST',
         message: 'User Does Not Exists!',
       };
     }
 
     const { userId } = req.userDetails;
+    const { friend_requests = [] } = userDetails || {};
 
-    await User.updateOne({ userId }, { $push: { friend_requests: userId } });
+    if (friend_requests.includes(userId)) {
+      throw {
+        code: 'FRIEND_REQUEST_ALREADY_SENT',
+        message: 'Friend Request Already Sent!',
+      };
+    }
+    await User.updateOne({ userId: id }, { $push: { friend_requests: userId } });
 
     res.status(200).send({ status: 'success', message: 'Friend Request Sent' });
   }
@@ -103,10 +110,31 @@ const handleFriendRequest = async (req, res) => {
     console.log('An Error has occured in the handleFriendRequest route: ', e);
     errorHandler(req, res, e);
   }
-}; 
+};
+
+const getPendingFriendRequests = async (req, res) => {
+  const { userId } = req.userDetails;
+  try {
+    const userDetails = await User.findOne({ userId }).lean() || {};
+    if (isEmpty(userDetails)) {
+      throw {
+        code: 'USER_DOES_NOT_EXIST',
+        message: 'User Does Not Exists!',
+      };
+    }
+    const { friend_requests = [] } = userDetails || {};
+    const pendingRequests = await User.find({ userId: { $in: friend_requests } }).lean() || [];
+    res.status(200).send({ status: 'success', pendingRequests });
+  }
+  catch (e) {
+    console.log('An Error has occured in the getPendingFriendRequests route: ', e);
+    errorHandler(req, res, e);
+  }
+};
 
 module.exports = {
   registerUser,
   loginUser,
   handleFriendRequest,
+  getPendingFriendRequests,
 };
