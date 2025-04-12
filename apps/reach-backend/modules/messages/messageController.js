@@ -7,22 +7,22 @@ async function getMessage(req, res) {
     res.send(Message);
   }
   catch (e) {
-    console.log("An Error has occured in the getMessage route!", e);
+    console.log('An Error has occured in the getMessage route!', e);
   }
 }
 
 async function setMessage(req, res) {
   const { conversationId, senderId, message } = req.body;
   try {
-    var obj = { senderId: senderId, message: message };
+    const obj = { senderId: senderId, message: message };
     await Message.findOneAndUpdate(
       { conversationId: conversationId },
       { $push: { data: obj } },
     );
-    res.send("Message Saved successfully");
+    res.send('Message Saved successfully');
   }
   catch (e) {
-    console.log("Error occured in setMessage route!", e);
+    console.log('Error occured in setMessage route!', e);
   }
 }
 

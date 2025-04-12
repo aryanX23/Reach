@@ -5,7 +5,7 @@ const { Message } = require('./messageModel');
 const models = {
   User,
   Conversation,
-  Message
+  Message,
 };
 
 global.models = models;

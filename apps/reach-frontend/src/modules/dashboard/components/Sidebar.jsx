@@ -14,11 +14,7 @@ function Sidebar() {
           <img src='/images/logo2.png' alt='logo' />
         </div>
       </div>
-      <SidebarIcon icon="🏠" />
-      <SidebarIcon icon="🗂️" />
-      <SidebarIcon icon="🕒" />
       <SidebarIcon icon="💬" active={true} />
-      <SidebarIcon icon="👤" />
     </div>
   );
 }

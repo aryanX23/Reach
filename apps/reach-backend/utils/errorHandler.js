@@ -1,27 +1,27 @@
 const errorHandler = (req, res, err) => {
   const { code, message } = err || {};
 
-  if (["INVALID_ARGUMENTS", "MISSING_ARGUMENTS"].includes(code)) {
-    return res.status(400).send({ status: "fail", message, code });
+  if (['INVALID_ARGUMENTS', 'MISSING_ARGUMENTS'].includes(code)) {
+    return res.status(400).send({ status: 'fail', message, code });
   }
 
-  if (code === "RESTRICTED_ACCESS") {
+  if (code === 'RESTRICTED_ACCESS') {
     return res.status(401).send({
       message,
       code,
-      status: "fail"
+      status: 'fail',
     });
   }
 
-  if (code === "UNAUTHORIZED_USER") {
+  if (code === 'UNAUTHORIZED_USER') {
     return res.status(401).send({
       message,
       code,
-      status: "fail"
+      status: 'fail',
     });
   }
 
-  return res.status(500).send({ status: "fail", message: err.message, code: "INTERNAL_SERVER_ERROR" });
-}
+  return res.status(500).send({ status: 'fail', message: err.message, code: 'INTERNAL_SERVER_ERROR' });
+};
 
 module.exports = { errorHandler };

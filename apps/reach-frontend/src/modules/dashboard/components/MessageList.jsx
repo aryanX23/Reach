@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+
 const MessageItem = ({ name, message, time, avatar, unread, active }) => (
   <div className={`flex items-center p-4 hover:bg-gray-100 border-b-2 border-t-slate-400 cursor-pointer ${active ? 'bg-gray-100' : ''}`}>
     <img src={avatar} alt={name} className="w-10 h-10 rounded-full mr-3" />
@@ -35,7 +37,32 @@ function MessageList() {
     <div className="w-80 bg-white border-r">
       <div className="p-4 border-b flex justify-between items-center">
         <h2 className="text-xl font-semibold">Messages</h2>
-        <button className="text-blue-500 text-3xl">+</button>
+        <Popover>
+          <PopoverTrigger className="text-blue-500 text-1xl font-medium">
+            Add Friends +
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="hash" className="block text-sm font-medium text-gray-700">
+                  <span className="text-lg font-semibold tracking-tight mb-2 block text-gray-900">Search by ID</span>
+                </label>
+                <input
+                  type="text"
+                  id="hash"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  placeholder="Enter Identification Number"
+                />
+              </div>
+              <button
+                onClick={() => {}}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Search
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
       <div className="overflow-y-auto h-[calc(100vh-60px)]">
         {messages.map((msg, index) => (

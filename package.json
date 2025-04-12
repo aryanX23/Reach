@@ -1,5 +1,5 @@
 {
-  "name": "Reach",
+  "name": "reach",
   "private": true,
   "scripts": {
     "build": "turbo build",
@@ -19,5 +19,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@radix-ui/react-popover": "^1.1.7"
+  }
 }

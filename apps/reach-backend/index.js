@@ -1,31 +1,24 @@
-require("dotenv").config();
-const http = require('http');
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const masterRoutes = require('./masterRoutes');
 
-const connectMongoDb = require("./services/mongoose");
-const SocketService = require('./services/socketService');
+const app = express();
+const port = process.env.PORT || 3000;
 
-const { PORT = 8000 } = process.env || {};
-// Package Import and variable initializations
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-//Database Connection and Socket Initialization
-const db = connectMongoDb();
+// Routes
+app.use('/api', masterRoutes());
 
-db.on('error', (err) => {
-  console.log('Mongoose error', err);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
-db.once('open', async () => {
-  const setupExpress = require('./services/express');
-  const app = setupExpress();
-  const server = http.createServer(app);
-
-  const socketService = new SocketService();
-  socketService._io.attach(server);
-  
-  server.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}!`);
-  });
-
-  console.log(`Connected to DB!`);
-  socketService.initListeners();
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
