@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { sendFriendRequest } from '@/store/slices/userSlices';
+import { useDispatch } from 'react-redux';
 
 const MessageItem = ({ name, message, time, avatar, unread, active }) => (
   <div className={`flex items-center p-4 hover:bg-gray-100 border-b-2 border-t-slate-400 cursor-pointer ${active ? 'bg-gray-100' : ''}`}>
@@ -21,6 +23,10 @@ const MessageItem = ({ name, message, time, avatar, unread, active }) => (
 );
 
 function MessageList() {
+  const dispatch = useDispatch();
+  const [searchId, setSearchId] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+
   const messages = [
     { name: "Adhraaa Al Azimi", message: "OK will handle this", time: "10m", avatar: "https://i.pravatar.cc/150?img=1", unread: 5 },
     { name: "Jaquon Hart", message: "Please take a look at this...", time: "1h", avatar: "https://i.pravatar.cc/150?img=2", unread: 7 },
@@ -32,6 +38,11 @@ function MessageList() {
     { name: "Zoe Miller", message: "See you later", time: "3h", avatar: "https://i.pravatar.cc/150?img=8" },
     { name: "Yolanda Barrueco", message: "Yolanda shared a picture", time: "3h 10m", avatar: "https://i.pravatar.cc/150?img=9" },
   ];
+
+  const handleSendFriendRequest = async () => {
+    console.log(searchId);
+    await dispatch(sendFriendRequest({ id: searchId })).then(res => console.log(res));
+  }
 
   return (
     <div className="w-80 bg-white border-r">
@@ -50,12 +61,14 @@ function MessageList() {
                 <input
                   type="text"
                   id="hash"
+                  value={searchId}
+                  onChange={(e) => setSearchId(e.target.value)}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                   placeholder="Enter Identification Number"
                 />
               </div>
               <button
-                onClick={() => {}}
+                onClick={handleSendFriendRequest}
                 className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Search

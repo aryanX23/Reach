@@ -71,8 +71,8 @@ async function loginUser(req, res) {
       email,
     };
 
-    const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '10s' });
-    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET);
+    const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '1H' });
+    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: '1D' });
 
     return res.status(200).send({ ACCESS_TOKEN: accessToken, REFRESH_TOKEN: refreshToken, userId, name, status: 'success' });
   }
@@ -83,7 +83,7 @@ async function loginUser(req, res) {
 }
 
 const handleFriendRequest = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.query;
   try {
     const userDetails = await User.findOne({ userId: id }).lean() || {};
     if (isEmpty(userDetails)) {
@@ -104,7 +104,7 @@ const handleFriendRequest = async (req, res) => {
     }
     await User.updateOne({ userId: id }, { $push: { friend_requests: userId } });
 
-    res.status(200).send({ status: 'success', message: 'Friend Request Sent' });
+    res.status(200).send({ status: 'success', message: 'Friend Request Sent Successfully!' });
   }
   catch (e) {
     console.log('An Error has occured in the handleFriendRequest route: ', e);

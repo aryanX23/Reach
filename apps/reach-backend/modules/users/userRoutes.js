@@ -7,7 +7,7 @@ module.exports = () => {
 
   router.route('/register').post(registerUser);
   router.route('/login').post(loginUser);
-  router.route('/send-friend-request/:id').get(handleFriendRequest);
+  router.route('/send-friend-request').get(handleFriendRequest);
   router.route('/pending-friend-requests').get(getPendingFriendRequests);
 
   return router;

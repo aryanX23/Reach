@@ -51,10 +51,10 @@ const loginSlice = createSlice({
   initialState,
   reducers: {
     resetDetails: (state) => {
-      state = initialState
+      return initialState;
     },
     setAccessToken: (state, action) => {
-      state.loginDetails.accessToken = action?.payload?.accessToken
+      state.loginDetails.accessToken = action?.payload?.accessToken || ""
     },
   },
   extraReducers: {
@@ -135,4 +135,10 @@ export const { resetDetails, setAccessToken } = loginSlice.actions;
 
 const { reducer: loginReducer } = loginSlice;
 
+export const selectToken = (state) => {
+  return {
+    accessToken: state.login.loginDetails.accessToken,
+    refreshToken: state.login.loginDetails.refreshToken,
+  }
+};
 export default loginReducer;

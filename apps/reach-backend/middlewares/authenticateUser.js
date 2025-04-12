@@ -8,18 +8,23 @@ function verifyJWT(accessToken, refreshToken) {
   let userDetails = {};
   try {
     userDetails = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
-    return { ...userDetails, accessTokenActive: true };
+    return { ...userDetails, refreshTokenExpired: false };
   } catch (err) {
     if (err?.name === 'TokenExpiredError') {
-      userDetails = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
-      return { ...userDetails, isTokenRefreshed: true };
+      try {
+        userDetails = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+        return { ...userDetails, isTokenRefreshed: true, refreshTokenExpired: false };
+      } catch (err) {
+        return { refreshTokenExpired: true };
+      }
     }
+    return {};
   }
 }
 
 async function authenticateUser(req, res, next) {
   try {
-    const accessToken = req.headers.authorization.split(' ')[1];
+    const accessToken = req.headers?.authorization?.split(' ')[1];
     const refreshToken = req.headers['refresh-token'];
 
     if (isUndefined(accessToken) || isUndefined(refreshToken)) {
@@ -28,35 +33,32 @@ async function authenticateUser(req, res, next) {
       });
     }
 
-    const tokenDetails =
-      verifyJWT(accessToken, refreshToken);
+    const tokenDetails = verifyJWT(accessToken, refreshToken);
 
     if (isEmpty(tokenDetails)) {
       throw Error('Unauthorized');
     }
 
-    const { isTokenRefreshed = false, accessTokenActive = false } = tokenDetails;
-
-    console.log(tokenDetails);
+    const { isTokenRefreshed = false, refreshTokenExpired = false } = tokenDetails;
 
     if (isTokenRefreshed) {
-      const newAccessToken = generateJwt({ userId: tokenDetails?.userId, email: tokenDetails?.email }, ACCESS_TOKEN_SECRET, '1h');
+      const newAccessToken = generateJwt({ userId: tokenDetails?.userId, email: tokenDetails?.email }, ACCESS_TOKEN_SECRET, '1H');
       req['userDetails'] = {
         userId: tokenDetails?.userId,
         email: tokenDetails?.email,
       };
 
       res.setHeader('authorization', 'Bearer ' + newAccessToken);
-      console.log('refershed!');
-    } else if (!accessTokenActive) {
-      res.setHeader('refresh-token', false);
+    } else if (refreshTokenExpired) {
+      return res.status(401).send({
+        message: 'Unauthorized',
+      });
     }
 
     req['userDetails'] = {
       userId: tokenDetails?.userId,
       email: tokenDetails?.email,
     };
-    console.log('User Details: ', req['userDetails']);
     next();
   } catch (err) {
     console.log('Error has occured in the authenticateUser middleware: ', err);
