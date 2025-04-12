@@ -56,6 +56,7 @@ async function authenticateUser(req, res, next) {
       userId: tokenDetails?.userId,
       email: tokenDetails?.email,
     };
+    console.log('User Details: ', req['userDetails']);
     next();
   } catch (err) {
     console.log('Error has occured in the authenticateUser middleware: ', err);
