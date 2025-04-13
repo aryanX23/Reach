@@ -84,8 +84,15 @@ async function loginUser(req, res) {
 
 const handleFriendRequest = async (req, res) => {
   const { id } = req.query;
+  const { userId } = req.userDetails;
+
   try {
-    const userDetails = await User.findOne({ userId: id }).lean() || {};
+
+    const [ userDetails = {}, callerDetails = {} ] = await Promise.all([
+      User.findOne({ userId: id }).lean(),
+      User.findOne({ userId }).lean(),
+    ]) || [];
+
     if (isEmpty(userDetails)) {
       throw {
         code: 'USER_DOES_NOT_EXIST',
@@ -93,8 +100,15 @@ const handleFriendRequest = async (req, res) => {
       };
     }
 
-    const { userId } = req.userDetails;
     const { friend_requests = [] } = userDetails || {};
+    const { friend_requests: callerFriendRequests = [], friend_list: callerFriendList = [] } = callerDetails || {};
+
+    if (id === userId) {
+      throw {
+        code: 'INVALID_ARGUMENTS',
+        message: 'Cannot Send Request to Yourself!',
+      };
+    }
 
     if (friend_requests.includes(userId)) {
       throw {
@@ -102,8 +116,24 @@ const handleFriendRequest = async (req, res) => {
         message: 'Friend Request Already Sent!',
       };
     }
-    await User.updateOne({ userId: id }, { $push: { friend_requests: userId } });
 
+    if (callerFriendList.includes(id)) {
+      throw {
+        code: 'FRIEND_ALREADY_ADDED',
+        message: 'Friend Already Added!',
+      };
+    }
+
+    if (callerFriendRequests.includes(id)) {
+      await Promise.all([
+        User.updateOne({ userId }, { $pull: { friend_requests: id } }),
+        User.updateOne({ userId }, { $push: { friend_list: id } }),
+        User.updateOne({ userId: id }, { $push: { friend_list: userId } }),
+      ]);
+      return res.status(200).send({ status: 'success', message: 'Friend Request Accepted Successfully!' });
+    }
+
+    await User.updateOne({ userId: id }, { $push: { friend_requests: userId } });
     res.status(200).send({ status: 'success', message: 'Friend Request Sent Successfully!' });
   }
   catch (e) {
@@ -124,10 +154,112 @@ const getPendingFriendRequests = async (req, res) => {
     }
     const { friend_requests = [] } = userDetails || {};
     const pendingRequests = await User.find({ userId: { $in: friend_requests } }).lean() || [];
-    res.status(200).send({ status: 'success', pendingRequests });
+    res.status(200).send({ status: 'success', data: pendingRequests });
   }
   catch (e) {
     console.log('An Error has occured in the getPendingFriendRequests route: ', e);
+    errorHandler(req, res, e);
+  }
+};
+
+const acceptFriendRequest = async (req, res) => {
+  const { id = "" } = req.query;
+  const { userId = "" } = req.userDetails;
+
+  try {
+    const [userDetails = {}, callerDetails = {}] = await Promise.all([
+      User.findOne({ userId: id }).lean(),
+      User.findOne({ userId }).lean(),
+    ]) || [];
+
+    if (isEmpty(userDetails)) {
+      throw {
+        code: 'USER_DOES_NOT_EXIST',
+        message: 'User Does Not Exists!',
+      };
+    }
+
+    const { friend_requests: callerFriendRequests = [], friend_list: callerFriendList = [] } = callerDetails || {};
+
+    if (id === userId) {
+      throw {
+        code: 'USER_DOES_NOT_EXIST',
+        message: 'Cannot Accept Your Own Request!',
+      };
+    }
+
+    if (!callerFriendRequests.includes(id)) {
+      throw {
+        code: 'FRIEND_REQUEST_NOT_FOUND',
+        message: 'Friend Request Not Found!',
+      };
+    }
+
+    if (callerFriendList.includes(id)) {
+      throw {
+        code: 'FRIEND_ALREADY_ADDED',
+        message: 'Friend Already Added!',
+      };
+    }
+    await Promise.all([
+      User.updateOne({ userId }, { $pull: { friend_requests: id } }),
+      User.updateOne({ userId }, { $push: { friend_list: id } }),
+      User.updateOne({ userId: id }, { $push: { friend_list: userId } }),
+    ]);
+
+    return res.status(200).send({ status: 'success', message: 'Friend Request Accepted Successfully!' });
+  } catch (e) {
+    console.log('An Error has occured in the acceptFriendRequest route: ', e);
+    errorHandler(req, res, e);
+  }
+};
+
+const rejectFriendRequest = async (req, res) => {
+  const { id = "" } = req.query;
+  const { userId = "" } = req.userDetails;
+
+  try {
+    const [userDetails = {}, callerDetails = {}] = await Promise.all([
+      User.findOne({ userId: id }).lean(),
+      User.findOne({ userId }).lean(),
+    ]) || [];
+
+    if (isEmpty(userDetails)) {
+      throw {
+        code: 'USER_DOES_NOT_EXIST',
+        message: 'User Does Not Exists!',
+      };
+    }
+
+    const { friend_requests: callerFriendRequests = [], friend_list: callerFriendList = [] } = callerDetails || {};
+
+    if (id === userId) {
+      throw {
+        code: 'USER_DOES_NOT_EXIST',
+        message: 'Cannot Accept Your Own Request!',
+      };
+    }
+
+    if (!callerFriendRequests.includes(id)) {
+      throw {
+        code: 'FRIEND_REQUEST_NOT_FOUND',
+        message: 'Friend Request Not Found!',
+      };
+    }
+
+    if (callerFriendList.includes(id)) {
+      throw {
+        code: 'FRIEND_ALREADY_ADDED',
+        message: 'Friend Already Added!',
+      };
+    }
+    await Promise.all([
+      User.updateOne({ userId }, { $pull: { friend_requests: id } }),
+    ]);
+
+    return res.status(200).send({ status: 'success', message: 'Friend Request Rejected Successfully!' });
+  } catch (e) {
+    console.log('An Error has occured in the rejectFriendRequest route: ', e);
     errorHandler(req, res, e);
   }
 };
@@ -137,4 +269,6 @@ module.exports = {
   loginUser,
   handleFriendRequest,
   getPendingFriendRequests,
+  acceptFriendRequest,
+  rejectFriendRequest,
 };

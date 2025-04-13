@@ -33,6 +33,31 @@ export const getPendingFriendRequests = createAsyncThunk(
   }
 );
 
+export const acceptFriendRequest = createAsyncThunk(
+  "user/acceptFriendRequest",
+  async (body, { rejectWithValue }) => {
+    try {
+      const res = await UserService.acceptFriendRequest(body);
+      return res?.data;
+    } catch (e) {
+      return rejectWithValue(e?.response?.data);
+    }
+  }
+);  
+
+export const rejectFriendRequest = createAsyncThunk(
+  "user/rejectFriendRequest",
+  async (body, { rejectWithValue }) => {
+    try {
+      const res = await UserService.rejectFriendRequest(body);
+      return res?.data;
+    } catch (e) {
+      return rejectWithValue(e?.response?.data);
+    }
+  }
+);
+
+
 const userSlice = createSlice({
   name: "users",
   initialState,
@@ -82,6 +107,56 @@ const userSlice = createSlice({
       let newState = {
         "message": "Failed to get pending friend requests!",
         "error": action.payload?.error?.message,
+        "loading": false
+      }
+      return newState;
+    },
+
+    [acceptFriendRequest.pending]: (state, action) => {
+      let newState = {
+        "loading": true
+      }
+      return newState;
+    },  
+    [acceptFriendRequest.fulfilled]: (state, action) => {
+      const { status = false, message = "" } = action?.payload || {};
+      if (status === "success") {
+        state['message'] = "Friend Request Accepted Successfully!";
+      } else {
+        state['message'] = message; 
+      }
+
+      state['loading'] = false;
+    },
+    [acceptFriendRequest.rejected]: (state, action) => {
+      let newState = {
+        "message": "Failed to accept friend request!",  
+        "error": action.payload?.error?.message,
+        "loading": false
+      }
+      return newState;
+    }, 
+
+    [rejectFriendRequest.pending]: (state, action) => {
+      let newState = {
+        "loading": true
+      }
+      return newState;
+    },
+    [rejectFriendRequest.fulfilled]: (state, action) => {
+      const { status = false, message = "" } = action?.payload || {};
+      if (status === "success") {
+        state['message'] = "Friend Request Rejected Successfully!";
+      } else {
+        state['message'] = message;
+      } 
+
+      state['loading'] = false;
+    },
+    [rejectFriendRequest.rejected]: (state, action) => {
+      let newState = {
+        "message": "Failed to reject friend request!",
+        "error": action.payload?.error?.message,  
         "loading": false
       }
       return newState;

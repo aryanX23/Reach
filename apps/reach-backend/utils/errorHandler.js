@@ -1,7 +1,7 @@
 const errorHandler = (req, res, err) => {
   const { code, message } = err || {};
 
-  if (['INVALID_ARGUMENTS', 'MISSING_ARGUMENTS', 'FRIEND_REQUEST_ALREADY_SENT', 'USER_DOES_NOT_EXIST'].includes(code)) {
+  if (['INVALID_ARGUMENTS', 'MISSING_ARGUMENTS', 'FRIEND_REQUEST_ALREADY_SENT', 'USER_DOES_NOT_EXIST', 'FRIEND_ALREADY_ADDED'].includes(code)) {
     return res.status(400).send({ status: 'fail', message, code });
   }
 

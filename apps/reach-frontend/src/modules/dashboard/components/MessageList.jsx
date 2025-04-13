@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { sendFriendRequest } from '@/store/slices/userSlices';
-import { useDispatch } from 'react-redux';
+import { showErrorToast, showSuccessToast } from '@/utils/ToastUtil/toastUtil';
 
 const MessageItem = ({ name, message, time, avatar, unread, active }) => (
   <div className={`flex items-center p-4 hover:bg-gray-100 border-b-2 border-t-slate-400 cursor-pointer ${active ? 'bg-gray-100' : ''}`}>
@@ -25,7 +26,7 @@ const MessageItem = ({ name, message, time, avatar, unread, active }) => (
 function MessageList() {
   const dispatch = useDispatch();
   const [searchId, setSearchId] = useState("");
-  const [searchResult, setSearchResult] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const messages = [
     { name: "Adhraaa Al Azimi", message: "OK will handle this", time: "10m", avatar: "https://i.pravatar.cc/150?img=1", unread: 5 },
@@ -40,19 +41,30 @@ function MessageList() {
   ];
 
   const handleSendFriendRequest = async () => {
-    console.log(searchId);
-    await dispatch(sendFriendRequest({ id: searchId })).then(res => console.log(res));
+    const { payload = {} } = await dispatch(sendFriendRequest({ id: searchId }));
+    const { status = "", message = "", code = "" } = payload || {};
+
+    if (status === "success") {
+      showSuccessToast(message);
+    } else if (status === "fail") {
+      showErrorToast(message);
+    } else {
+      showErrorToast("Something went wrong, Pls try again!");
+    }
+
+    // Close the popover after sending the friend request
+    setOpen(false);
   }
 
   return (
     <div className="w-80 bg-white border-r">
       <div className="p-4 border-b flex justify-between items-center">
         <h2 className="text-xl font-semibold">Messages</h2>
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger className="text-blue-500 text-1xl font-medium">
             Add Friends +
           </PopoverTrigger>
-          <PopoverContent>
+          <PopoverContent className="w-96 bg-white shadow-lg rounded-lg p-6 border border-gray-200">
             <div className="space-y-4">
               <div>
                 <label htmlFor="hash" className="block text-sm font-medium text-gray-700">
@@ -63,7 +75,7 @@ function MessageList() {
                   id="hash"
                   value={searchId}
                   onChange={(e) => setSearchId(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50 sm:text-sm p-2"
                   placeholder="Enter Identification Number"
                 />
               </div>
