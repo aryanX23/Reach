@@ -11,23 +11,7 @@ const RequestList = () => {
   const [searchId, setSearchId] = useState("");
   const [open, setOpen] = useState(false);
   const [friendRequests, setFriendRequests] = useState([]);
-
-  useEffect(() => {
-    const fetchFriendRequests = async () => {
-      const { payload = {} } = await dispatch(getPendingFriendRequests());
-      const { status = "", message = "Something went wrong, Pls try again!", code = "", data = [] } = payload || {};
-
-      if (status === "success") {
-        setFriendRequests(data);
-      } else if (status === "fail") {
-        showErrorToast(message);
-      } else {
-        showErrorToast("Something went wrong, Pls try again!");
-      }
-    }
-
-    fetchFriendRequests();
-  }, []);
+  const [reload, setReload] = useState(false);
 
   const handleSendFriendRequest = async () => {
     const { payload = {} } = await dispatch(sendFriendRequest({ id: searchId }));
@@ -56,6 +40,8 @@ const RequestList = () => {
     } else {
       showErrorToast("Something went wrong, Pls try again!");
     }
+
+    setReload(!reload);
   }
 
   const handleRejectFriendRequest = async (userId) => {
@@ -69,7 +55,26 @@ const RequestList = () => {
     } else {
       showErrorToast("Something went wrong, Pls try again!");
     }
-  }   
+
+    setReload(!reload);
+  }
+
+  useEffect(() => {
+    const fetchFriendRequests = async () => {
+      const { payload = {} } = await dispatch(getPendingFriendRequests());
+      const { status = "", message = "Something went wrong, Pls try again!", code = "", data = [] } = payload || {};
+
+      if (status === "success") {
+        setFriendRequests(data);
+      } else if (status === "fail") {
+        showErrorToast(message);
+      } else {
+        showErrorToast("Something went wrong, Pls try again!");
+      }
+    }
+
+    fetchFriendRequests();
+  }, [reload]);
 
   return (
     <div className="w-80 bg-white border-r">
