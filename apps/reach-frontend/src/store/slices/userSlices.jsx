@@ -5,6 +5,7 @@ import UserService from "@/services/userServices";
 const initialState = {
   "loading": false,
   "pendingFriendRequests": [],
+  "friendList": [],
   "error": null,
   "message": "",
 };
@@ -57,6 +58,18 @@ export const rejectFriendRequest = createAsyncThunk(
   }
 );
 
+export const getFriendList = createAsyncThunk(
+  "user/getFriendList",
+  async (body, { rejectWithValue }) => {
+    try {
+      const res = await UserService.getFriendList();
+      return res?.data;
+    } catch (e) {
+      return rejectWithValue(e?.response?.data);
+    }
+  }
+);
+
 
 const userSlice = createSlice({
   name: "users",
@@ -94,7 +107,7 @@ const userSlice = createSlice({
       return newState;
     },
     [getPendingFriendRequests.fulfilled]: (state, action) => {
-      const { status = false, message = "", pendingRequests = [] } = action?.payload || {};
+      const { status = false, message = "", data: pendingRequests = [] } = action?.payload || {};
       if (status === "success") {
         state['pendingFriendRequests'] = pendingRequests;
       } else {
@@ -157,6 +170,31 @@ const userSlice = createSlice({
       let newState = {
         "message": "Failed to reject friend request!",
         "error": action.payload?.error?.message,  
+        "loading": false
+      }
+      return newState;
+    },
+
+    [getFriendList.pending]: (state, action) => {
+      let newState = {
+        "loading": true
+      }
+      return newState;
+    },
+    [getFriendList.fulfilled]: (state, action) => {
+      const { status = false, message = "", data: friendList = [] } = action?.payload || {};
+      if (status === "success") {
+        state['friendList'] = friendList;
+      } else {
+        state['message'] = message;
+      }
+
+      state['loading'] = false;
+    },
+    [getFriendList.rejected]: (state, action) => {
+      let newState = {
+        "message": "Failed to get friend list!",
+        "error": action.payload?.error?.message,
         "loading": false
       }
       return newState;

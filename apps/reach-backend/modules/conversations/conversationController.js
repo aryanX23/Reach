@@ -29,7 +29,7 @@ async function createConversation(req, res) {
 
 async function getConversationById(req, res) {
   try {
-    const userId = req.params.userId;
+    const { userId = "" } = req.userDetails;
     const Conversation = await Conversation.find({ members: { $in: userId } });
     const conversationUserData = Promise.all(
       Conversation.map(async (conversation) => {

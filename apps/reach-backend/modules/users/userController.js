@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { isEmpty } = require('lodash');
 
 const { User } = require('../../models');
-const { getId, errorHandler } = require('../../utils');
+const { getId, errorHandler, createConversationRoom } = require('../../utils');
 const { ENCRYPT_KEY, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env || {};
 
 const cryptr = new Cryptr(ENCRYPT_KEY);
@@ -129,6 +129,7 @@ const handleFriendRequest = async (req, res) => {
         User.updateOne({ userId }, { $pull: { friend_requests: id } }),
         User.updateOne({ userId }, { $push: { friend_list: id } }),
         User.updateOne({ userId: id }, { $push: { friend_list: userId } }),
+        createConversationRoom({ members: [userId, id], type: "p2p" }),
       ]);
       return res.status(200).send({ status: 'success', message: 'Friend Request Accepted Successfully!' });
     }
@@ -205,6 +206,7 @@ const acceptFriendRequest = async (req, res) => {
       User.updateOne({ userId }, { $pull: { friend_requests: id } }),
       User.updateOne({ userId }, { $push: { friend_list: id } }),
       User.updateOne({ userId: id }, { $push: { friend_list: userId } }),
+      createConversationRoom({ members: [userId, id], type: "p2p" }),
     ]);
 
     return res.status(200).send({ status: 'success', message: 'Friend Request Accepted Successfully!' });
@@ -264,6 +266,26 @@ const rejectFriendRequest = async (req, res) => {
   }
 };
 
+const getFriendList = async (req, res) => {
+  const { userId } = req.userDetails;
+  try {
+    const userDetails = await User.findOne({ userId }).lean() || {};
+    if (isEmpty(userDetails)) {
+      throw {
+        code: 'USER_DOES_NOT_EXIST',
+        message: 'User Does Not Exists!',
+      };
+    }
+    const { friend_list = [] } = userDetails || {};
+    const friendList = await User.find({ userId: { $in: friend_list } }).lean() || [];
+    res.status(200).send({ status: 'success', data: friendList });
+  }
+  catch (e) {
+    console.log('An Error has occured in the getPendingFriendRequests route: ', e);
+    errorHandler(req, res, e);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -271,4 +293,5 @@ module.exports = {
   getPendingFriendRequests,
   acceptFriendRequest,
   rejectFriendRequest,
+  getFriendList,
 };

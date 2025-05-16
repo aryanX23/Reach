@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 const Message = ({ content, sender, time, attachments }) => (
   <div className={`mb-4 ${sender === 'self' ? 'text-right' : ''}`}>

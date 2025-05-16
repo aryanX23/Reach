@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const RequestItem = ({ name, userId, avatar = "https://i.pravatar.cc/150?img=1", onAccept, onReject }) => {
+const RequestItem = ({ name, userId, avatar = "https://i.pravatar.cc/150?img=1", onAccept, onReject, enableToggle = true }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer = () => {
@@ -9,12 +9,12 @@ const RequestItem = ({ name, userId, avatar = "https://i.pravatar.cc/150?img=1",
 
   const handleAccept = () => {
     onAccept(userId);
-    setIsOpen(false); 
+    setIsOpen(false);
   };
 
   const handleReject = () => {
     onReject(userId);
-    setIsOpen(false); 
+    setIsOpen(false);
   };
 
   return (
@@ -27,11 +27,13 @@ const RequestItem = ({ name, userId, avatar = "https://i.pravatar.cc/150?img=1",
         <div className="flex-1">
           <div className="flex justify-between items-center">
             <span className="font-semibold">{name}</span>
-            <span className="text-gray-500">{isOpen ? '▲' : '▼'}</span> {/* Arrow indicator */}
+            {enableToggle &&
+              <span className="text-gray-500">{isOpen ? '▲' : '▼'}</span>
+            }
           </div>
         </div>
       </div>
-      {isOpen && (
+      {(isOpen && enableToggle) && (
         <div className="transition-all duration-300 ease-in-out bg-white shadow-md rounded-lg p-4 border border-gray-200">
           <div className="flex justify-between">
             <button

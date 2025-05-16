@@ -4,6 +4,8 @@ const userSchema = mongoose.Schema({
   userId: {
     type: String,
     required: true,
+    unique: true,
+    trim: true,
   },
   name: {
     type: String,
@@ -25,6 +27,9 @@ const userSchema = mongoose.Schema({
     type: Array,
     default: [],
   },
+}, {
+  timestamps: true,
+  collection: 'users'
 });
 
 module.exports = { User: mongoose.model('Users', userSchema) };

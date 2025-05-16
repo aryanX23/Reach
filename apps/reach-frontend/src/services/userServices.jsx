@@ -28,11 +28,16 @@ const rejectFriendRequest = ({ id }) => {
   });
 };
 
+const getFriendList = () => {
+  return axiosPrivate.get(`/api/users/friend-list`);
+};
+
 const UserService = {
   sendFriendRequest,
   getPendingFriendRequests,
   acceptFriendRequest,
   rejectFriendRequest,
+  getFriendList,
 }
 
 export default UserService;

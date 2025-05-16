@@ -1,7 +1,7 @@
 const Router = require('express-promise-router');
 const router = Router({ mergeParams: true });
 
-const { registerUser, loginUser, handleFriendRequest, getPendingFriendRequests, acceptFriendRequest, rejectFriendRequest } = require('./userController');
+const { registerUser, loginUser, handleFriendRequest, getPendingFriendRequests, acceptFriendRequest, rejectFriendRequest, getFriendList } = require('./userController');
 
 module.exports = () => {
 
@@ -11,7 +11,7 @@ module.exports = () => {
   router.route('/pending-friend-requests').get(getPendingFriendRequests);
   router.route('/accept-friend-request').get(acceptFriendRequest);
   router.route('/reject-friend-request').get(rejectFriendRequest);
-
+  router.route('/friend-list').get(getFriendList);
 
   return router;
 };

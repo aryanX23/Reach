@@ -1,22 +1,45 @@
-import React, { useEffect } from 'react';
+import { isEmpty } from 'lodash';
+import { useEffect, useContext, useState, createContext } from 'react';
 import { io } from 'socket.io-client';
+
 const { VITE_SERVER_URL } = import.meta.env || {};
+const SocketContext = createContext(null);
 
-const SocketContext = React.createContext(null);
+export const SocketProvider = ({
+  children,
+  namespace = "/",
+  roomId = "",
+}) => {
+  const [socket, setSocket] = useState(null);
+  const url = VITE_SERVER_URL + namespace;
 
-export const SocketProvider = ({ children }) => {
-  
   useEffect(() => {
-    const socket = io(VITE_SERVER_URL);
+    if (isEmpty(roomId)) {
+      return;
+    }
+    
+    const newSocket = io(url);
+
+    newSocket.on("connect", () => {
+      newSocket.emit("join-room", { roomId });
+    });
+
+    newSocket.on("connect_error", (err) => {
+      console.error("Connection error:", err);
+    });
+
+    setSocket(newSocket);
 
     return () => {
-      socket.disconnect();
+      newSocket.disconnect();
     };
-  }, []);
-  
+  }, [url, roomId]);
+
   return (
-    <SocketContext.Provider value={null}>
-      {children}
-    </SocketContext.Provider>
+    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
   );
-}
+};
+
+export const useSocket = () => {
+  return useContext(SocketContext);
+};

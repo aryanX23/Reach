@@ -1,34 +1,46 @@
-const { Server } = require('socket.io');
+const { Server } = require("socket.io");
 
-const { ORIGIN_URL = 'http://localhost:3000' } = process.env || {};
+const ORIGIN_URL = process.env.ORIGIN_URL ?? "http://localhost:3000";
 
-class SocketService {
-  _io = null;
+const { chatRoomSocketNamespaceController} = require("../modules/socketControllers");
 
-  constructor() {
-    this._io = new Server({
+module.exports = class SocketService {
+  _io;
+  socketRouteMap;
+
+  constructor(server) {
+    this._io = new Server(server, {
       cors: {
-        allowedHeaders: ['*'],
         origin: [ORIGIN_URL],
+        methods: ["GET", "POST"],
+        allowedHeaders: ["*"],
+        credentials: false,
       },
+      transports: ["websocket", "polling"],
+      allowEIO3: true,
     });
-    console.log('Socket Init Successful...');
+
+    // Instantiating Namespaces Route Map
+    this.socketRouteMap = {
+      "chat-room": this._io.of("/chat-room"),
+    };
+    console.log("Socket Init Successful...");
   }
 
   getIO() {
     return this._io;
   }
 
-  initListeners() {
-    const io = this._io;
-    console.log('Initializing Socket Listeners..');
+  getSocketRouteMap(
+    routeKey
+  ) {
+    return this.socketRouteMap[routeKey];
+  }
 
-    io.on('connection', (socket) => {
-      console.log('User connected', socket.id);
+  async initListeners() {
+    console.log("Initializing Socket Listeners..");
 
-    });
+    // Initializing Socket Listeners
+    await chatRoomSocketNamespaceController(this.getSocketRouteMap("chat-room"));
   }
 }
-
-module.exports = SocketService;
-
