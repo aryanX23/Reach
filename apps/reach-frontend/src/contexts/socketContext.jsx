@@ -24,13 +24,27 @@ export const SocketProvider = ({
       newSocket.emit("join-room", { roomId });
     });
 
+    newSocket.on("disconnect", () => {
+      console.log("Socket disconnected");
+      newSocket.emit("leave-room", { roomId });
+    });
+
     newSocket.on("connect_error", (err) => {
       console.error("Connection error:", err);
+    });
+
+    newSocket.on("connect_timeout", (err) => {
+      console.error("Connection timeout:", err);
+    });
+
+    newSocket.on("reconnection_attempt", (attempt) => {
+      console.log(`Reconnection attempt #${attempt}`);
     });
 
     setSocket(newSocket);
 
     return () => {
+      newSocket.emit("leave-room", { roomId });
       newSocket.disconnect();
     };
   }, [url, roomId]);

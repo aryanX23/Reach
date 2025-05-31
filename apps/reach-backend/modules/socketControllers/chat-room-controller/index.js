@@ -20,9 +20,13 @@ const chatRoomSocketNamespaceController = async (
         socket.on("send-message", (data) => {
           socket
             .to(data.roomId)
-            .emit("receive-message", data?.newMessage || "");
+            .emit("receive-message", data?.content || "");
         });
       });
+    
+    chatRoomSocketNamespace.on("disconnect", (socket) => {
+      console.log("Chat Room Socket Disconnected -> ", socket.id);
+    });
   } catch (error) {
     console.log("Error in Chat Room Socket Namespace handler -> \n", error);
   }
