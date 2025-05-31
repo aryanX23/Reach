@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import Sidebar from './components/Sidebar';
 import MessageList from './components/MessageList';
@@ -10,6 +11,7 @@ import { SocketProvider } from '@/contexts/socketContext';
 
 function Dashboard() {
   const [activeTab, setActiveTab] = useState(1);
+  const selectActiveConversationId = useSelector((state) => state.conversation.selectedConversationId);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -18,7 +20,7 @@ function Dashboard() {
         {activeTab === 1 && <MessageList />}
         {activeTab === 2 && <FriendList />}
         {activeTab === 3 && <RequestList />}
-        <SocketProvider namespace='/chat-room' roomId="">
+        <SocketProvider namespace='/chat-room' roomId={selectActiveConversationId}>
           <ChatWindow />
         </SocketProvider>
       </div>

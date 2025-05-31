@@ -27,25 +27,26 @@ async function createConversation(req, res) {
   }
 }
 
-async function getConversationById(req, res) {
+const getActiveConversations = async (req, res) => {
   try {
     const { userId = "" } = req.userDetails;
-    const Conversation = await Conversation.find({ members: { $in: userId } });
-    const conversationUserData = Promise.all(
-      Conversation.map(async (conversation) => {
+    const conversations = await Conversation.find({ members: { $in: userId }, status: "active" }).lean() || [];
+
+    const conversationUserData = await Promise.all(
+      conversations.map(async (conversation) => {
         const receiverId = conversation.members.find((member) => member !== userId);
-        const user = await User.findById(receiverId);
-        return { user: { email: user.email, fullName: user.fullName }, conversationId: conversation._id, receiverid: receiverId };
+        const receiverDetails = await User.findOne({ userId: receiverId }).lean() || {};
+        return { user: { email: receiverDetails.email, fullName: receiverDetails.name, userId: receiverId }, conversationId: conversation.conversationId };
       }),
     );
-    res.status(200).json(await conversationUserData);
+    res.status(200).json({ status: "success", data: conversationUserData });
+  } catch (error) {
+    console.error('Error fetching active conversations:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
-  catch (e) {
-    console.log('An error has occured in the getConversationById route!', e);
-  }
-}
+};
 
 module.exports = {
   createConversation,
-  getConversationById,
+  getActiveConversations
 };

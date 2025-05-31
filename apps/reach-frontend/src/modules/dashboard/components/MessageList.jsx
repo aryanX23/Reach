@@ -1,46 +1,47 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useState, useCallback, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { sendFriendRequest } from '@/store/slices/userSlices';
+import { getActiveConversations, setActiveConversation } from '@/store/slices/conversationSlices';
 import { showErrorToast, showSuccessToast } from '@/utils/ToastUtil/toastUtil';
 
-const MessageItem = ({ name, message, time, avatar, unread, active }) => (
-  <div className={`flex items-center p-4 hover:bg-gray-100 border-b-2 border-t-slate-400 cursor-pointer ${active ? 'bg-gray-100' : ''}`}>
-    <img src={avatar} alt={name} className="w-10 h-10 rounded-full mr-3" />
-    <div className="flex-1">
-      <div className="flex justify-between items-center">
-        <span className="font-semibold">{name}</span>
-        <span className="text-xs text-gray-500">{time}</span>
+const MessageItem = ({ name, message, time, avatar = "https://avatar.iran.liara.run/public/30", unread, conversationId }) => {
+  const dispatch = useDispatch();
+  const selectActiveConversationId = useSelector((state) => state.conversation.selectedConversationId);
+
+  const handleSetActive = useCallback((conversationId) => {
+    dispatch(setActiveConversation(conversationId));
+  }, [dispatch, name, message, time, avatar, unread]);
+
+  return (
+    <div className={`flex items-center p-4 hover:bg-gray-100 border-b-2 border-t-slate-400 cursor-pointer ${(selectActiveConversationId === conversationId) ? 'bg-gray-100' : ''}`} onClick={() => handleSetActive(conversationId)}>
+      <img src={avatar} alt={name} className="w-10 h-10 rounded-full mr-3" />
+      <div className="flex-1">
+        <div className="flex justify-between items-center">
+          <span className="font-semibold">{name}</span>
+          <span className="text-xs text-gray-500">{time}</span>
+        </div>
+        <p className="text-sm text-gray-600 truncate">{message}</p>
       </div>
-      <p className="text-sm text-gray-600 truncate">{message}</p>
+      {unread && (
+        <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs m-2">
+          {unread}
+        </div>
+      )}
     </div>
-    {unread && (
-      <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs m-2">
-        {unread}
-      </div>
-    )}
-  </div>
-);
+  );
+};
 
 function MessageList() {
   const dispatch = useDispatch();
+
+  const activeConversations = useSelector((state) => state.conversation.activeConversations);
+
   const [searchId, setSearchId] = useState("");
   const [open, setOpen] = useState(false);
 
-  const messages = [
-    { name: "Adhraaa Al Azimi", message: "OK will handle this", time: "10m", avatar: "https://i.pravatar.cc/150?img=1", unread: 5 },
-    { name: "Jaquon Hart", message: "Please take a look at this...", time: "1h", avatar: "https://i.pravatar.cc/150?img=2", unread: 7 },
-    { name: "Diane Lansdowne", message: "Done", time: "1h", avatar: "https://i.pravatar.cc/150?img=3", active: true },
-    { name: "Rickie Baroch", message: "Cool", time: "1h 30m", avatar: "https://i.pravatar.cc/150?img=4", unread: 1 },
-    { name: "Tsutsui Ichiha", message: "Anna contacted me with...", time: "2h", avatar: "https://i.pravatar.cc/150?img=5" },
-    { name: "Richardo Kann", message: "I'm gonna do that today so...", time: "2h", avatar: "https://i.pravatar.cc/150?img=6" },
-    { name: "Farid Amini", message: "Farid sent a document", time: "2h 15m", avatar: "https://i.pravatar.cc/150?img=7" },
-    { name: "Zoe Miller", message: "See you later", time: "3h", avatar: "https://i.pravatar.cc/150?img=8" },
-    { name: "Yolanda Barrueco", message: "Yolanda shared a picture", time: "3h 10m", avatar: "https://i.pravatar.cc/150?img=9" },
-  ];
-
-  const handleSendFriendRequest = async () => {
+  const handleSendFriendRequest = useCallback(async () => {
     const { payload = {} } = await dispatch(sendFriendRequest({ id: searchId }));
     const { status = "", message = "", code = "" } = payload || {};
 
@@ -54,7 +55,11 @@ function MessageList() {
 
     // Close the popover after sending the friend request
     setOpen(false);
-  }
+  }, [searchId, dispatch]);
+
+  useEffect(() => {
+    dispatch(getActiveConversations());
+  }, []);
 
   return (
     <div className="w-80 bg-white border-r">
@@ -90,8 +95,15 @@ function MessageList() {
         </Popover>
       </div>
       <div className="overflow-y-auto h-[calc(100vh-60px)]">
-        {messages.map((msg, index) => (
-          <MessageItem key={index} {...msg} />
+        {
+          activeConversations?.length === 0 && (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500">No active conversations</p>
+            </div>
+          )
+        }
+        {activeConversations?.map((conversation) => (
+          <MessageItem key={conversation?.conversationId} name={conversation?.user?.fullName || "Unknown"} conversationId={conversation?.conversationId} />
         ))}
       </div>
     </div>
