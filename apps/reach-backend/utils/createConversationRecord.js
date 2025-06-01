@@ -10,7 +10,7 @@ const createConversationRoom = async (options) => {
     conversationId,
     members,
     type,
-    status: 'inactive',
+    status: 'active',
     groupName,
   };
 

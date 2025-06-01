@@ -69,12 +69,13 @@ async function loginUser(req, res) {
     const payload = {
       userId,
       email,
+      name,
     };
 
     const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: '1H' });
     const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: '1D' });
 
-    return res.status(200).send({ ACCESS_TOKEN: accessToken, REFRESH_TOKEN: refreshToken, userId, name, status: 'success' });
+    return res.status(200).send({ ACCESS_TOKEN: accessToken, REFRESH_TOKEN: refreshToken, userId, name, email, status: 'success' });
   }
   catch (e) {
     console.log('An Error has occured in the login route: ', e);

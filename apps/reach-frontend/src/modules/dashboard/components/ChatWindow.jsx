@@ -1,37 +1,56 @@
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { isEmpty } from 'lodash';
+import moment from 'moment-timezone';
 import { SendHorizonal } from 'lucide-react';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import { useSocket } from '@/contexts/socketContext';
+import { modifyActiveConversationMessageList } from '@/store/slices/conversationSlices';
 
-const Message = ({ content, sender, time, attachments }) => (
-  <div className={`mb-4 ${sender === 'self' ? 'text-right' : ''}`}>
-    <div className={`inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${sender === 'self' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-      }`}>
-      <p>{content}</p>
-      {attachments && (
-        <div className="mt-2 flex space-x-2">
-          {attachments.map((att, index) => (
-            <img key={index} src={att} alt="attachment" className="w-20 h-20 object-cover rounded" />
-          ))}
-        </div>
-      )}
+const Message = ({ content, sender, time, attachments, timezone }) => {
+
+  const parsedAndFormattedTime = useMemo(() => {
+    if (typeof time === 'string') {
+      try {
+        return moment(JSON.parse(time)).tz(timezone).format('HH:mm A');
+      } catch (error) {
+        console.error("Error parsing time:", error);
+        return "";
+      }
+    }
+    return "";
+  }, [time, timezone]);
+
+  return (
+    <div className={`mb-4 ${sender === 'self' ? 'text-right' : ''}`}>
+      <div className={`inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${sender === 'self' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+        }`}>
+        <p>{content}</p>
+        {attachments && (
+          <div className="mt-2 flex space-x-2">
+            {attachments.map((att, index) => (
+              <img key={index} src={att} alt="attachment" className="w-20 h-20 object-cover rounded" />
+            ))}
+          </div>
+        )}
+      </div>
+      <span className="block text-xs mt-1 text-gray-500">{parsedAndFormattedTime}</span>
     </div>
-    <span className="block text-xs mt-1 text-gray-500">{time}</span>
-  </div>
-);
+  )
+};
 
 function ChatWindow() {
+  const dispatch = useDispatch();
   const socket = useSocket();
   const dummyDivRef = useRef(null);
 
   const selectActiveConversationId = useSelector((state) => state.conversation.selectedConversationId) || "";
   const activeConversationList = useSelector((state) => state.conversation.activeConversations) || [];
-  const activeConversation = activeConversationList?.find(conv => conv.conversationId === selectActiveConversationId) || {};
+  const activeConversation = useMemo(() => { return activeConversationList?.find(conv => conv.conversationId === selectActiveConversationId) || {}; }, [selectActiveConversationId]);
+  const activeMessageList = useSelector((state) => state.conversation.activeConversationMessageList) || [];
+  const userId = useSelector((state) => state.login?.loginDetails?.userInfo?.userId) || "";
 
   const [messageInput, setMessageInput] = useState("");
-  const [messageList, setMessageList] = useState([]);
 
   const NoConversationElement = memo(() => {
     return (
@@ -48,7 +67,7 @@ function ChatWindow() {
   }, []);
 
 
-  const sendMessageViaSocket = useCallback((message) => {
+  const sendMessageViaSocket = useCallback((message = {}) => {
     if (isEmpty(socket) || isEmpty(selectActiveConversationId)) return;
 
     socket.emit("send-message", {
@@ -59,15 +78,21 @@ function ChatWindow() {
 
   const handleSendMessage = (messageInput) => {
     if (messageInput.trim()) {
-      setMessageList(prev => [...prev, { content: messageInput, sender: 'self', time: 'Just now' }]);
-      sendMessageViaSocket(messageInput);
+      const timeRightNow = moment.utc()
+      const timezone = moment.tz.guess();
+
+      let messageBody = { content: messageInput, sender: 'self', time: JSON.stringify(timeRightNow), timezone: timezone, senderId: userId };
+      dispatch(modifyActiveConversationMessageList({
+        message: messageBody
+      }));
+      sendMessageViaSocket(messageBody);
       setMessageInput('');
     }
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messageList, scrollToBottom]);
+  }, [activeMessageList, scrollToBottom]);
 
 
   useEffect(() => {
@@ -76,8 +101,10 @@ function ChatWindow() {
       return;
     }
 
-    socket.on("receive-message", (message) => {
-      setMessageList(prev => [...prev, { content: message, sender: "other", time: "Just now" }]);
+    socket.on("receive-message", (message = {}) => {
+      dispatch(modifyActiveConversationMessageList({
+        message: { content: message.content, sender: 'other', time: message.time, timezone: message.timezone }
+      }));
     });
 
     return () => {
@@ -104,9 +131,9 @@ function ChatWindow() {
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {
-              messageList?.map((messageBody, index) => {
+              activeMessageList?.map((messageBody, index) => {
                 return (
-                  <Message key={index} content={messageBody?.content || ""} sender={messageBody?.sender || ""} time="Just now" />
+                  <Message key={index} content={messageBody?.content || ""} sender={messageBody?.sender || ""} time={messageBody?.time} timezone={messageBody?.timezone} />
                 );
               })
             }

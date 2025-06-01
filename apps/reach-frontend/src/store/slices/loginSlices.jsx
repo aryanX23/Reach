@@ -8,7 +8,12 @@ const initialState = {
     accessToken: '',
     refreshToken: '',
     error: false,
-    message: ""
+    message: "",
+    userInfo: {
+      userId: '',
+      name: '',
+      email: '',
+    }
   },
   "loading": false
 };
@@ -71,15 +76,18 @@ const loginSlice = createSlice({
       return newState;
     },
     [loginUser.fulfilled]: (state, action) => {
-      const { ACCESS_TOKEN: accessToken = '', REFRESH_TOKEN: refreshToken = '', userId = '', name = '', status = false } = action?.payload || {};
+      const { ACCESS_TOKEN: accessToken = '', REFRESH_TOKEN: refreshToken = '', userId = '', name = '', email = '', status = false } = action?.payload || {};
       if (status === "success") {
 
         state['loginDetails'] = {
           authenticated: true,
           accessToken,
           refreshToken,
-          userId,
-          name,
+          userInfo: {
+            userId,
+            name,
+            email
+          }
         };
       }
       state['loading'] = false;

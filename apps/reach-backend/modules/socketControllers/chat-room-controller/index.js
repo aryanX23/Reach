@@ -20,7 +20,7 @@ const chatRoomSocketNamespaceController = async (
         socket.on("send-message", (data) => {
           socket
             .to(data.roomId)
-            .emit("receive-message", data?.content || "");
+            .emit("receive-message", data?.content || {});
         });
       });
     

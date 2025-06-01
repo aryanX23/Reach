@@ -7,6 +7,7 @@ const initialState = {
   "error": null,
   "message": "",
   "activeConversations": [],
+  "activeConversationMessageList": [],
   "selectedConversationId": null,
 };
 
@@ -29,7 +30,14 @@ const conversationSlices = createSlice({
   reducers: {
     setActiveConversation: (state, action) => {
       state.selectedConversationId = action?.payload || null;
+      state.activeConversationMessageList = [];
     },
+    modifyActiveConversationMessageList: (state, action) => {
+      const { message = {} } = action?.payload || {};
+      if (state.selectedConversationId) {
+        state.activeConversationMessageList.push(message);
+      }
+    }
   },
   extraReducers: {
     [getActiveConversations.pending]: (state, action) => {
@@ -57,5 +65,5 @@ const conversationSlices = createSlice({
 
 const { reducer: conversationReducer } = conversationSlices;
 
-export const { setActiveConversation } = conversationSlices.actions;
+export const { setActiveConversation, modifyActiveConversationMessageList } = conversationSlices.actions;
 export default conversationReducer;
