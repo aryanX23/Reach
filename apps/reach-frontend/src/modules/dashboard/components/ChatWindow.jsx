@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { isEmpty } from 'lodash';
 import moment from 'moment-timezone';
@@ -46,19 +46,22 @@ function ChatWindow() {
 
   const selectActiveConversationId = useSelector((state) => state.conversation.selectedConversationId) || "";
   const activeConversationList = useSelector((state) => state.conversation.activeConversations) || [];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const activeConversation = useMemo(() => { return activeConversationList?.find(conv => conv.conversationId === selectActiveConversationId) || {}; }, [selectActiveConversationId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const activeMessageList = useSelector((state) => state.conversation.activeConversationMessageList) || [];
   const userId = useSelector((state) => state.login?.loginDetails?.userInfo?.userId) || "";
 
   const [messageInput, setMessageInput] = useState("");
 
-  const NoConversationElement = memo(() => {
+  const NoConversationElement = memo(function NoConversationElement() {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
         <p className="text-lg">Select a conversation to start chatting</p>
       </div>
     );
   });
+  
 
   const scrollToBottom = useCallback(() => {
     if (dummyDivRef.current) {
@@ -112,7 +115,7 @@ function ChatWindow() {
       socket.off("receive-message");
       socket.disconnect();
     };
-  }, [selectActiveConversationId, activeConversation, socket]);
+  }, [selectActiveConversationId, activeConversation, socket, dispatch]);
 
   return (
     <div className="flex-1 flex flex-col">

@@ -1,0 +1,15 @@
+# Backend Dockerfile
+FROM node:18-alpine AS backend-builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN yarn install --frozen-lockfile
+RUN yarn turbo run build --filter=reach-backend...
+
+WORKDIR /app/apps/reach-backend
+
+EXPOSE 3001
+
+CMD ["yarn", "start"]

@@ -1,10 +1,18 @@
-import js from '@eslint/js';
-import globals from 'globals';
+// eslint.config.cjs
+const js = require('@eslint/js');
+const globals = require('globals');
 
-export default [
+module.exports = [
   js.configs.recommended,
   {
     files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'build/**',
+      '.env',
+      '*.log',
+    ],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -38,12 +46,5 @@ export default [
       'no-empty': 'warn',
       'no-irregular-whitespace': 'error',
     },
-    ignores: [
-      'node_modules/**',
-      'dist/**',
-      'build/**',
-      '.env',
-      '*.log',
-    ],
   },
-]; 
+];

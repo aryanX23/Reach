@@ -74,7 +74,7 @@ const RequestList = () => {
     }
 
     fetchFriendRequests();
-  }, [reload]);
+  }, [reload, dispatch]);
 
   return (
     <div className="w-80 bg-white border-r">

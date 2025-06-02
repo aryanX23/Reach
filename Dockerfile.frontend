@@ -1,0 +1,18 @@
+# Frontend Dockerfile
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN yarn install --frozen-lockfile
+RUN yarn turbo run build --filter=reach-frontend...
+
+# Stage 2: Use nginx to serve built files
+FROM nginx:alpine
+
+COPY --from=builder /app/apps/reach-frontend/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

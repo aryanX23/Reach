@@ -112,7 +112,7 @@ export default function Login() {
             </button>
             <div className="login-register">
               <p>
-                Don't have an account?
+                Don&apos;t have an account?
                 <Link to="/register">
                   Register
                 </Link>

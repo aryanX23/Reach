@@ -72,7 +72,7 @@ export default function Register() {
     if (authState) {
       navigate("/dashboard");
     }
-  }, [navigate]);
+  }, [navigate, authState]);
 
   return (
     <div className="signInBody">

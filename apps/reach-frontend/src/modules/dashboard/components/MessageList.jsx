@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
@@ -12,7 +12,7 @@ const MessageItem = ({ name, message, time, avatar = "https://avatar.iran.liara.
 
   const handleSetActive = useCallback((conversationId) => {
     dispatch(setActiveConversation(conversationId));
-  }, [dispatch, name, message, time, avatar, unread]);
+  }, [dispatch]);
 
   return (
     <div className={`flex items-center p-4 hover:bg-gray-100 border-b-2 border-t-slate-400 cursor-pointer ${(selectActiveConversationId === conversationId) ? 'bg-gray-100' : ''}`} onClick={() => handleSetActive(conversationId)}>
@@ -59,7 +59,7 @@ function MessageList() {
 
   useEffect(() => {
     dispatch(getActiveConversations());
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="w-80 bg-white border-r">

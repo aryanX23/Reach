@@ -15,6 +15,7 @@ function verifyJWT(accessToken, refreshToken) {
         userDetails = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
         return { ...userDetails, isTokenRefreshed: true, refreshTokenExpired: false };
       } catch (err) {
+        console.warn(err);
         return { refreshTokenExpired: true };
       }
     }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const RequestItem = ({ name, userId, avatar = "https://i.pravatar.cc/150?img=1", onAccept, onReject, enableToggle = true }) => {
   const [isOpen, setIsOpen] = useState(false);

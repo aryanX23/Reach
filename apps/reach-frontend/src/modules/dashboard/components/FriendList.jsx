@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { getFriendList, sendFriendRequest } from '@/store/slices/userSlices';
+import { showSuccessToast, showErrorToast } from '@/utils/ToastUtil/toastUtil';
 import RequestItem from './RequestItem';
 
 const RequestList = () => {
@@ -35,7 +36,7 @@ const RequestList = () => {
     }
 
     fetchFriendList();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="w-80 bg-white border-r">
