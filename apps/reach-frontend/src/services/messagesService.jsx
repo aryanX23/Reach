@@ -1,8 +1,5 @@
 import { axiosPrivate } from "../utils/AxiosUtils/axiosConfig";
 
-
-const MessagesService = {
-
-}
+const MessagesService = {};
 
 export default MessagesService;

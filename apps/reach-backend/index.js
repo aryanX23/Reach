@@ -1,7 +1,7 @@
 require("dotenv").config();
-const http = require('http');
+const http = require("http");
 
-const { connectDatabase, setupExpress, SocketService } = require('./services');
+const { connectDatabase, setupExpress, SocketService } = require("./services");
 
 const { PORT = 8000 } = process.env || {};
 // Package Import and variable initializations
@@ -9,11 +9,11 @@ const { PORT = 8000 } = process.env || {};
 //Database Connection and Socket Initialization
 const db = connectDatabase();
 
-db.on('error', (err) => {
-  console.log('Mongoose error', err);
+db.on("error", (err) => {
+  console.log("Mongoose error", err);
 });
 
-db.once('open', async () => {
+db.once("open", async () => {
   try {
     const app = setupExpress();
     const server = http.createServer(app);
@@ -28,7 +28,7 @@ db.once('open', async () => {
     console.log(`Connected to DB!`);
     socketService.initListeners();
   } catch (err) {
-    console.log('Error in startup configuration ->', err);
+    console.log("Error in startup configuration ->", err);
     process.exit(1);
   }
 });

@@ -1,38 +1,39 @@
-import axios from 'axios';
-import { store } from '@/store/store';
-import { selectToken, setAccessToken, resetDetails } from '@/store/slices/loginSlices';
+import axios from "axios";
+import { store } from "@/store/store";
+import {
+  selectToken,
+  setAccessToken,
+  resetDetails,
+} from "@/store/slices/loginSlices";
 
 const { VITE_SERVER_URL } = import.meta.env || {};
 
 export default axios.create({
-  baseURL: VITE_SERVER_URL
+  baseURL: VITE_SERVER_URL,
 });
 
 const axiosPrivate = axios.create({
   baseURL: VITE_SERVER_URL,
-  headers: { 'Content-Type': 'application/json' },
-  withCredentials: true
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
 
 axiosPrivate.interceptors.request.use(
   (config) => {
-    const { accessToken: ACCESS_TOKEN, refreshToken: REFRESH_TOKEN } = selectToken(store.getState());
+    const { accessToken: ACCESS_TOKEN, refreshToken: REFRESH_TOKEN } =
+      selectToken(store.getState());
 
     if (!config.headers["authorization"]) {
-      config.headers[
-        "authorization"
-      ] = `Bearer ${ACCESS_TOKEN}`;
+      config.headers["authorization"] = `Bearer ${ACCESS_TOKEN}`;
     }
 
     if (!config.headers["refresh-token"]) {
-      config.headers[
-        "refresh-token"
-      ] = `${REFRESH_TOKEN}`;
+      config.headers["refresh-token"] = `${REFRESH_TOKEN}`;
     }
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 axiosPrivate.interceptors.response.use(
@@ -58,7 +59,7 @@ axiosPrivate.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
-)
+  },
+);
 
 export { axiosPrivate };

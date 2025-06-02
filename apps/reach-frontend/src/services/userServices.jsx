@@ -3,8 +3,8 @@ import { axiosPrivate } from "../utils/AxiosUtils/axiosConfig";
 const sendFriendRequest = ({ id }) => {
   return axiosPrivate.get(`/api/users/send-friend-request`, {
     params: {
-      id
-    }
+      id,
+    },
   });
 };
 
@@ -15,16 +15,16 @@ const getPendingFriendRequests = () => {
 const acceptFriendRequest = ({ id }) => {
   return axiosPrivate.get(`/api/users/accept-friend-request`, {
     params: {
-      id
-    }
+      id,
+    },
   });
-};  
+};
 
 const rejectFriendRequest = ({ id }) => {
   return axiosPrivate.get(`/api/users/reject-friend-request`, {
     params: {
-      id
-    }
+      id,
+    },
   });
 };
 
@@ -38,6 +38,6 @@ const UserService = {
   acceptFriendRequest,
   rejectFriendRequest,
   getFriendList,
-}
+};
 
 export default UserService;

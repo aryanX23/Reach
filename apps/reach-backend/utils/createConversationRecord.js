@@ -10,7 +10,7 @@ const createConversationRoom = async (options) => {
     conversationId,
     members,
     type,
-    status: 'active',
+    status: "active",
     groupName,
   };
 
@@ -20,4 +20,3 @@ const createConversationRoom = async (options) => {
 module.exports = {
   createConversationRoom,
 };
-

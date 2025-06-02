@@ -1,52 +1,67 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { IonIcon } from '@ionic/react';
-import { mail, lockClosed, person, closeCircle, checkmarkCircle, alertCircle } from 'ionicons/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import { showErrorToast, showSuccessToast } from '../../utils/ToastUtil/toastUtil';
+import React, { useState, useRef, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { IonIcon } from "@ionic/react";
+import {
+  mail,
+  lockClosed,
+  person,
+  closeCircle,
+  checkmarkCircle,
+  alertCircle,
+} from "ionicons/icons";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  showErrorToast,
+  showSuccessToast,
+} from "../../utils/ToastUtil/toastUtil";
 
-import { registerUser } from '../../store/slices/loginSlices';
+import { registerUser } from "../../store/slices/loginSlices";
 
-import './register.css';
-
+import "./register.css";
 
 export default function Register() {
   const ref = useRef([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [userDetails, setUserDetails] = useState({ fullName: "", email: "", password: "", confirmPassword: "" });
+  const [userDetails, setUserDetails] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const authState = useSelector(state => state?.login?.loginDetails?.authenticated || false);
+  const authState = useSelector(
+    (state) => state?.login?.loginDetails?.authenticated || false,
+  );
 
   async function handleRegister(e) {
     e.preventDefault();
     try {
       if (userDetails.password !== userDetails.confirmPassword) {
-        setUserDetails(prev => ({
+        setUserDetails((prev) => ({
           ...prev,
           password: "",
-          confirmPassword: ""
+          confirmPassword: "",
         }));
         showErrorToast("Passwords do not Match!");
-      }
-      else {
+      } else {
         const bodyFormData = {
           name: userDetails.fullName,
           email: userDetails.email,
-          password: userDetails.password
+          password: userDetails.password,
         };
 
         await dispatch(registerUser(bodyFormData))
-          .then(res => res.payload)
-          .then(res => {
+          .then((res) => res.payload)
+          .then((res) => {
             const { status = false, message } = res || {};
             if (status === "success") {
-              setUserDetails(prev => ({
+              setUserDetails((prev) => ({
                 fullName: "",
                 email: "",
                 password: "",
-                confirmPassword: ""
+                confirmPassword: "",
               }));
               ref.current.checked = false;
               showSuccessToast("User Registered Successfully!");
@@ -62,7 +77,7 @@ export default function Register() {
   }
 
   function handleChange(e) {
-    setUserDetails(prev => ({
+    setUserDetails((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -84,7 +99,7 @@ export default function Register() {
 
       <div className="headerBody">
         <div className="headerTitle">
-          <img className='websiteLogo' src='/images/logo2.png' alt='logo' />
+          <img className="websiteLogo" src="/images/logo2.png" alt="logo" />
           <span>Reach</span>
         </div>
         <div>
@@ -101,7 +116,7 @@ export default function Register() {
       <div className="formWrapper">
         <div className="form-box">
           <h2>Register</h2>
-          
+
           <form onSubmit={handleRegister}>
             <div className="input-box">
               <span className="icon">
@@ -177,9 +192,7 @@ export default function Register() {
             <div className="login-register">
               <p>
                 Already have an account?
-                <Link to="/login">
-                  Login
-                </Link>
+                <Link to="/login">Login</Link>
               </p>
             </div>
           </form>

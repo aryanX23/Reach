@@ -1,16 +1,12 @@
-import React from 'react';
-import { isEmpty } from 'lodash';
-import { useEffect, useContext, useState, createContext } from 'react';
-import { io } from 'socket.io-client';
+import React from "react";
+import { isEmpty } from "lodash";
+import { useEffect, useContext, useState, createContext } from "react";
+import { io } from "socket.io-client";
 
 const { VITE_SERVER_URL } = import.meta.env || {};
 const SocketContext = createContext(null);
 
-export const SocketProvider = ({
-  children,
-  namespace = "/",
-  roomId = "",
-}) => {
+export const SocketProvider = ({ children, namespace = "/", roomId = "" }) => {
   const [socket, setSocket] = useState(null);
   const url = VITE_SERVER_URL + namespace;
 
@@ -18,7 +14,7 @@ export const SocketProvider = ({
     if (isEmpty(roomId)) {
       return;
     }
-    
+
     const newSocket = io(url);
 
     newSocket.on("connect", () => {

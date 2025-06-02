@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const RequestItem = ({ name, userId, avatar = "https://i.pravatar.cc/150?img=1", onAccept, onReject, enableToggle = true }) => {
+const RequestItem = ({
+  name,
+  userId,
+  avatar = "https://i.pravatar.cc/150?img=1",
+  onAccept,
+  onReject,
+  enableToggle = true,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer = () => {
@@ -20,20 +27,20 @@ const RequestItem = ({ name, userId, avatar = "https://i.pravatar.cc/150?img=1",
   return (
     <div>
       <div
-        className={`flex items-center p-4 hover:bg-gray-100 border-b-2 border-t-slate-400 cursor-pointer ${isOpen ? 'bg-gray-100' : ''}`}
+        className={`flex items-center p-4 hover:bg-gray-100 border-b-2 border-t-slate-400 cursor-pointer ${isOpen ? "bg-gray-100" : ""}`}
         onClick={toggleDrawer}
       >
         <img src={avatar} alt={name} className="w-10 h-10 rounded-full mr-3" />
         <div className="flex-1">
           <div className="flex justify-between items-center">
             <span className="font-semibold">{name}</span>
-            {enableToggle &&
-              <span className="text-gray-500">{isOpen ? '▲' : '▼'}</span>
-            }
+            {enableToggle && (
+              <span className="text-gray-500">{isOpen ? "▲" : "▼"}</span>
+            )}
           </div>
         </div>
       </div>
-      {(isOpen && enableToggle) && (
+      {isOpen && enableToggle && (
         <div className="transition-all duration-300 ease-in-out bg-white shadow-md rounded-lg p-4 border border-gray-200">
           <div className="flex justify-between">
             <button

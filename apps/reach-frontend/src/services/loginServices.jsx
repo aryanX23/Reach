@@ -11,6 +11,6 @@ const loginUser = (data) => {
 const LoginService = {
   loginUser,
   registerUser,
-}
+};
 
 export default LoginService;

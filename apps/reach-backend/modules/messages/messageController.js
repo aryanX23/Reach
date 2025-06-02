@@ -1,13 +1,12 @@
-const {  Message } = require('../../models');
+const { Message } = require("../../models");
 
 async function getMessage(req, res) {
   try {
     const conversationId = req.params.id;
     const Message = await Message.findOne({ conversationId });
     res.send(Message);
-  }
-  catch (e) {
-    console.log('An Error has occured in the getMessage route!', e);
+  } catch (e) {
+    console.log("An Error has occured in the getMessage route!", e);
   }
 }
 
@@ -19,10 +18,9 @@ async function setMessage(req, res) {
       { conversationId: conversationId },
       { $push: { data: obj } },
     );
-    res.send('Message Saved successfully');
-  }
-  catch (e) {
-    console.log('Error occured in setMessage route!', e);
+    res.send("Message Saved successfully");
+  } catch (e) {
+    console.log("Error occured in setMessage route!", e);
   }
 }
 

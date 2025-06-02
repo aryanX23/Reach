@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
-import { IonIcon } from '@ionic/react';
-import { mail, lockClosed } from 'ionicons/icons';
+import { IonIcon } from "@ionic/react";
+import { mail, lockClosed } from "ionicons/icons";
 
-import { loginUser } from '../../store/slices/loginSlices';
-import { showErrorToast, showSuccessToast } from '../../utils/ToastUtil/toastUtil';
+import { loginUser } from "../../store/slices/loginSlices";
+import {
+  showErrorToast,
+  showSuccessToast,
+} from "../../utils/ToastUtil/toastUtil";
 
-import './Login.css';
-
+import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ export default function Login() {
   const [userDetails, setUserDetails] = useState({ email: "", password: "" });
 
   function handleChange(e) {
-    setUserDetails(prev => ({
+    setUserDetails((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -28,16 +30,20 @@ export default function Login() {
     e.preventDefault();
     const bodyFormData = {
       email: userDetails.email,
-      password: userDetails.password
+      password: userDetails.password,
     };
 
-    dispatch(loginUser(bodyFormData)).then(res => res.payload)
-      .then(res => {
-        const { status = false, message = "Something went wrong, Pls try again!" } = res || {};
+    dispatch(loginUser(bodyFormData))
+      .then((res) => res.payload)
+      .then((res) => {
+        const {
+          status = false,
+          message = "Something went wrong, Pls try again!",
+        } = res || {};
 
         if (status === "success") {
           showSuccessToast("Login Successful");
-          navigate('/dashboard');
+          navigate("/dashboard");
         } else if (!status || status === "fail") {
           showErrorToast(message);
         }
@@ -53,7 +59,7 @@ export default function Login() {
       />
       <div className="headerBody">
         <div className="headerTitle">
-          <img className='websiteLogo' src='/images/logo2.png' alt='logo' />
+          <img className="websiteLogo" src="/images/logo2.png" alt="logo" />
           <span>Reach</span>
         </div>
         <div>
@@ -113,9 +119,7 @@ export default function Login() {
             <div className="login-register">
               <p>
                 Don&apos;t have an account?
-                <Link to="/register">
-                  Register
-                </Link>
+                <Link to="/register">Register</Link>
               </p>
             </div>
           </form>

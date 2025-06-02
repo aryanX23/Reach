@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector, shallowEqual } from "react-redux";
 
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { getFriendList, sendFriendRequest } from '@/store/slices/userSlices';
-import { showSuccessToast, showErrorToast } from '@/utils/ToastUtil/toastUtil';
-import RequestItem from './RequestItem';
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { getFriendList, sendFriendRequest } from "@/store/slices/userSlices";
+import { showSuccessToast, showErrorToast } from "@/utils/ToastUtil/toastUtil";
+import RequestItem from "./RequestItem";
 
 const RequestList = () => {
   const dispatch = useDispatch();
@@ -12,10 +16,15 @@ const RequestList = () => {
   const [searchId, setSearchId] = useState("");
   const [open, setOpen] = useState(false);
 
-  const friendList = useSelector(state => state.user?.friendList || [], shallowEqual);
+  const friendList = useSelector(
+    (state) => state.user?.friendList || [],
+    shallowEqual,
+  );
 
   const handleSendFriendRequest = async () => {
-    const { payload = {} } = await dispatch(sendFriendRequest({ id: searchId }));
+    const { payload = {} } = await dispatch(
+      sendFriendRequest({ id: searchId }),
+    );
     const { status = "", message = "", code = "" } = payload || {};
 
     if (status === "success") {
@@ -28,12 +37,12 @@ const RequestList = () => {
 
     // Close the popover after sending the friend request
     setOpen(false);
-  }
+  };
 
   useEffect(() => {
     const fetchFriendList = () => {
       dispatch(getFriendList());
-    }
+    };
 
     fetchFriendList();
   }, [dispatch]);
@@ -49,8 +58,13 @@ const RequestList = () => {
           <PopoverContent className="w-96 bg-white shadow-lg rounded-lg p-6 border border-gray-200">
             <div className="space-y-4">
               <div>
-                <label htmlFor="hash" className="block text-sm font-medium text-gray-700">
-                  <span className="text-lg font-semibold tracking-tight mb-2 block text-gray-900">Search by ID</span>
+                <label
+                  htmlFor="hash"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  <span className="text-lg font-semibold tracking-tight mb-2 block text-gray-900">
+                    Search by ID
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -74,24 +88,33 @@ const RequestList = () => {
       <div className="overflow-y-auto h-[calc(100vh-60px)]">
         {friendList.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 bg-white rounded-lg shadow-lg border border-gray-200">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mb-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-16 w-16 mb-4 text-blue-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             <p className="text-2xl font-bold text-gray-800">No Friends</p>
-            <p className="mt-2 text-md text-gray-600">Start adding friends to see here!</p>
+            <p className="mt-2 text-md text-gray-600">
+              Start adding friends to see here!
+            </p>
           </div>
         ) : (
-            friendList.map((msg, index) => (
-            <RequestItem
-              key={index}
-              {...msg}
-              enableToggle={false}
-            />
+          friendList.map((msg, index) => (
+            <RequestItem key={index} {...msg} enableToggle={false} />
           ))
         )}
       </div>
     </div>
   );
-}
+};
 
 export default RequestList;

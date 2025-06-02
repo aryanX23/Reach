@@ -1,5 +1,5 @@
 const { Server } = require("socket.io");
-const { Redis } = require('ioredis');
+const { Redis } = require("ioredis");
 const { createAdapter } = require("@socket.io/redis-adapter");
 
 const ORIGIN_URL = process.env.ORIGIN_URL ?? "http://localhost:3000";
@@ -30,7 +30,9 @@ redisClient.on("connect", () => {
   console.log("Redis Client Connected Successfully");
 });
 
-const { chatRoomSocketNamespaceController} = require("../modules/socketControllers");
+const {
+  chatRoomSocketNamespaceController,
+} = require("../modules/socketControllers");
 
 module.exports = class SocketService {
   _io;
@@ -60,9 +62,7 @@ module.exports = class SocketService {
     return this._io;
   }
 
-  getSocketRouteMap(
-    routeKey
-  ) {
+  getSocketRouteMap(routeKey) {
     return this.socketRouteMap[routeKey];
   }
 
@@ -70,6 +70,8 @@ module.exports = class SocketService {
     console.log("Initializing Socket Listeners..");
 
     // Initializing Socket Listeners
-    await chatRoomSocketNamespaceController(this.getSocketRouteMap("chat-room"));
+    await chatRoomSocketNamespaceController(
+      this.getSocketRouteMap("chat-room"),
+    );
   }
-}
+};

@@ -1,6 +1,6 @@
-const { User } = require('./userModel');
-const { Conversation } = require('./conversationModel');
-const { Message } = require('./messageModel');
+const { User } = require("./userModel");
+const { Conversation } = require("./conversationModel");
+const { Message } = require("./messageModel");
 
 const models = {
   User,
