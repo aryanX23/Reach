@@ -15,7 +15,9 @@ export const SocketProvider = ({ children, namespace = "/", roomId = "" }) => {
       return;
     }
 
-    const newSocket = io(url);
+    const newSocket = io(url, {
+      withCredentials: true
+    });
 
     newSocket.on("connect", () => {
       newSocket.emit("join-room", { roomId });

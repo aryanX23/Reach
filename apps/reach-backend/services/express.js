@@ -22,6 +22,10 @@ module.exports = () => {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
+  app.get("/health", (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
+  });
 
   // Middleware to authenticate Customer
 

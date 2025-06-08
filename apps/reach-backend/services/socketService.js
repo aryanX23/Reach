@@ -44,7 +44,7 @@ module.exports = class SocketService {
         origin: [ORIGIN_URL],
         methods: ["GET", "POST"],
         allowedHeaders: ["*"],
-        credentials: false,
+        credentials: true,
       },
       transports: ["websocket", "polling"],
       allowEIO3: true,
