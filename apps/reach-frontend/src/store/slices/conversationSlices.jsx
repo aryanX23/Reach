@@ -7,7 +7,7 @@ const initialState = {
   error: null,
   message: "",
   activeConversations: [],
-  activeConversationMessageList: [],
+  activeConversationMessageMap: new Map(),
   selectedConversationId: null,
 };
 
@@ -29,21 +29,28 @@ const conversationSlices = createSlice({
   reducers: {
     setActiveConversation: (state, action) => {
       state.selectedConversationId = action?.payload || null;
-      state.activeConversationMessageList = [];
     },
-    modifyActiveConversationMessageList: (state, action) => {
+    modifyActiveConversationMessageMap: (state, action) => {
       const { message = {} } = action?.payload || {};
       if (state.selectedConversationId) {
-        state.activeConversationMessageList.push(message);
+
+        // FIX: Ensure we are working with a Map instance
+        const map = state.activeConversationMessageMap instanceof Map
+          ? state.activeConversationMessageMap
+          : new Map(Object.entries(state.activeConversationMessageMap));
+
+        const messageArray = map.get(message.roomId) || [];
+        messageArray.push(message);
+        map.set(message.roomId, messageArray);
+
+        // Finally, assign the updated map back to the state
+        state.activeConversationMessageMap = map;
       }
     },
   },
   extraReducers: {
     [getActiveConversations.pending]: (state, action) => {
-      let newState = {
-        loading: true,
-      };
-      return newState;
+      state["loading"] = true;
     },
     [getActiveConversations.fulfilled]: (state, action) => {
       const { message = "", data = [] } = action?.payload || {};
@@ -52,18 +59,15 @@ const conversationSlices = createSlice({
       state["activeConversations"] = data;
     },
     [getActiveConversations.rejected]: (state, action) => {
-      let newState = {
-        message: "Failed to get active conversations!",
-        error: action.payload?.error?.message,
-        loading: false,
-      };
-      return newState;
+      state["message"] = "Failed to get active conversations!";
+      state["error"] = action.payload?.error?.message;
+      state["loading"] = false;
     },
   },
 });
 
 const { reducer: conversationReducer } = conversationSlices;
 
-export const { setActiveConversation, modifyActiveConversationMessageList } =
+export const { setActiveConversation, modifyActiveConversationMessageMap } =
   conversationSlices.actions;
 export default conversationReducer;

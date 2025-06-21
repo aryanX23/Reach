@@ -3,11 +3,14 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import logger from "redux-logger";
 import { encryptTransform } from "redux-persist-transform-encrypt";
+import { enableMapSet } from "immer";
+
 import reducers from "./rootReducers";
 
 const { VITE_APP_ENCRYPT_KEY, VITE_APP_ENVIRONMENT = "local" } =
   import.meta.env || {};
 
+enableMapSet();
 const encryptor = encryptTransform({
   secretKey: VITE_APP_ENCRYPT_KEY,
   onError: function (error) {

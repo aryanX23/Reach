@@ -12,7 +12,7 @@ import moment from "moment-timezone";
 import { SendHorizonal } from "lucide-react";
 
 import { useSocket } from "@/contexts/socketContext";
-import { modifyActiveConversationMessageList } from "@/store/slices/conversationSlices";
+import { modifyActiveConversationMessageMap } from "@/store/slices/conversationSlices";
 
 const Message = ({ content, sender, time, attachments, timezone }) => {
   const parsedAndFormattedTime = useMemo(() => {
@@ -30,9 +30,8 @@ const Message = ({ content, sender, time, attachments, timezone }) => {
   return (
     <div className={`mb-4 ${sender === "self" ? "text-right" : ""}`}>
       <div
-        className={`inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-          sender === "self" ? "bg-blue-500 text-white" : "bg-gray-200"
-        }`}
+        className={`inline-block max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${sender === "self" ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
       >
         <p>{content}</p>
         {attachments && (
@@ -71,11 +70,21 @@ function ChatWindow() {
         (conv) => conv.conversationId === selectActiveConversationId,
       ) || {}
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectActiveConversationId]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const activeMessageList =
-    useSelector((state) => state.conversation.activeConversationMessageList) ||
-    [];
+
+  const activeConversationMap =
+  useSelector((state) => state.conversation.activeConversationMessageMap);
+
+// FIX & OPTIMIZATION: Memoize the list derivation and ensure data is a Map
+const activeMessageList = useMemo(() => {
+  // If the stored data is not a Map (e.g., after rehydration), convert it.
+  if (activeConversationMap && !(activeConversationMap instanceof Map)) {
+    return new Map(Object.entries(activeConversationMap)).get(selectActiveConversationId) || [];
+  }
+  return activeConversationMap?.get(selectActiveConversationId) || [];
+}, [activeConversationMap, selectActiveConversationId]);
+  
   const userId =
     useSelector((state) => state.login?.loginDetails?.userInfo?.userId) || "";
 
@@ -118,9 +127,10 @@ function ChatWindow() {
         time: JSON.stringify(timeRightNow),
         timezone: timezone,
         senderId: userId,
+        roomId: selectActiveConversationId,
       };
       dispatch(
-        modifyActiveConversationMessageList({
+        modifyActiveConversationMessageMap({
           message: messageBody,
         }),
       );
@@ -144,13 +154,16 @@ function ChatWindow() {
     }
 
     socket.on("receive-message", (message = {}) => {
+      console.log("Message received from server -> ", message);
       dispatch(
-        modifyActiveConversationMessageList({
+        modifyActiveConversationMessageMap({
           message: {
             content: message.content,
             sender: "other",
             time: message.time,
             timezone: message.timezone,
+            roomId: message.roomId,
+            senderId: message.senderId,
           },
         }),
       );

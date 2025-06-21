@@ -10,26 +10,28 @@ import FriendList from "./components/FriendList";
 import { SocketProvider } from "@/contexts/socketContext";
 
 function Dashboard() {
+  const activeConversationList =
+    useSelector((state) => state.conversation.activeConversations) || [];
+
+  const conversationIdList = activeConversationList.map((conv) => conv.conversationId) || [];
+  
   const [activeTab, setActiveTab] = useState(1);
-  const selectActiveConversationId = useSelector(
-    (state) => state.conversation.selectedConversationId,
-  );
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="flex-1 flex">
-        {activeTab === 1 && <MessageList />}
-        {activeTab === 2 && <FriendList />}
-        {activeTab === 3 && <RequestList />}
-        <SocketProvider
-          namespace="/chat-room"
-          roomId={selectActiveConversationId}
-        >
+      <SocketProvider
+        namespace="/chat-room"
+        rooms={conversationIdList}
+      >
+        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <div className="flex-1 flex">
+          {activeTab === 1 && <MessageList />}
+          {activeTab === 2 && <FriendList />}
+          {activeTab === 3 && <RequestList />}
           <ChatWindow />
-        </SocketProvider>
-      </div>
-    </div>
+        </div>
+      </SocketProvider>
+    </div >
   );
 }
 

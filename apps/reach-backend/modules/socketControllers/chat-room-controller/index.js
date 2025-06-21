@@ -3,14 +3,19 @@ const chatRoomSocketNamespaceController = async (chatRoomSocketNamespace) => {
     chatRoomSocketNamespace.on("connection", (socket) => {
       console.log("New Chat Room Connection established -> ", socket.id);
 
-      socket.on("join-room", (data) => {
-        console.log("Joining room -> ", data);
-        socket.join(data.roomId);
+      socket.on("join-room", (data = {}) => {
+        console.log("Joining rooms -> ", data);
+        const { rooms = [] } = data;
+        rooms.forEach((roomId) => {
+          socket.join(roomId);
+        });
       });
 
-      socket.on("leave-room", (data) => {
-        console.log("Leaving room -> ", data);
-        socket.leave(data.roomId);
+      socket.on("leave-room", (data = {}) => {
+        const { rooms = [] } = data;
+        rooms.forEach((roomId) => {
+          socket.join(roomId);
+        });
       });
 
       socket.on("send-message", (data) => {

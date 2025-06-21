@@ -1,17 +1,18 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { isEmpty } from "lodash";
 import { useEffect, useContext, useState, createContext } from "react";
 import { io } from "socket.io-client";
+import { useSelector } from "react-redux";
 
 const { VITE_SERVER_URL } = import.meta.env || {};
 const SocketContext = createContext(null);
 
-export const SocketProvider = ({ children, namespace = "/", roomId = "" }) => {
+export const SocketProvider = ({ children, namespace = "/", rooms = [] }) => {
   const [socket, setSocket] = useState(null);
   const url = VITE_SERVER_URL + namespace;
 
   useEffect(() => {
-    if (isEmpty(roomId)) {
+    if (isEmpty(rooms)) {
       return;
     }
 
@@ -20,12 +21,12 @@ export const SocketProvider = ({ children, namespace = "/", roomId = "" }) => {
     });
 
     newSocket.on("connect", () => {
-      newSocket.emit("join-room", { roomId });
+      newSocket.emit("join-room", { rooms: rooms });
     });
 
     newSocket.on("disconnect", () => {
       console.log("Socket disconnected");
-      newSocket.emit("leave-room", { roomId });
+      newSocket.emit("leave-room", { rooms: rooms });
     });
 
     newSocket.on("connect_error", (err) => {
@@ -43,10 +44,10 @@ export const SocketProvider = ({ children, namespace = "/", roomId = "" }) => {
     setSocket(newSocket);
 
     return () => {
-      newSocket.emit("leave-room", { roomId });
+      newSocket.emit("leave-room", { rooms: rooms });
       newSocket.disconnect();
     };
-  }, [url, roomId]);
+  }, [url, rooms]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
