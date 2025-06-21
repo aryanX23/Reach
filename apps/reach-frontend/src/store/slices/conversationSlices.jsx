@@ -48,21 +48,22 @@ const conversationSlices = createSlice({
       }
     },
   },
-  extraReducers: {
-    [getActiveConversations.pending]: (state, action) => {
-      state["loading"] = true;
-    },
-    [getActiveConversations.fulfilled]: (state, action) => {
-      const { message = "", data = [] } = action?.payload || {};
-      state["message"] = message;
-      state["loading"] = false;
-      state["activeConversations"] = data;
-    },
-    [getActiveConversations.rejected]: (state, action) => {
-      state["message"] = "Failed to get active conversations!";
-      state["error"] = action.payload?.error?.message;
-      state["loading"] = false;
-    },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getActiveConversations.pending, (state) => {
+        state["loading"] = true;
+      })
+      .addCase(getActiveConversations.fulfilled, (state, action) => {
+        const { message = "", data = [] } = action?.payload || {};
+        state["message"] = message;
+        state["loading"] = false;
+        state["activeConversations"] = data;
+      })
+      .addCase(getActiveConversations.rejected, (state, action) => {
+        state["message"] = "Failed to get active conversations!";
+        state["error"] = action.payload?.error?.message;
+        state["loading"] = false;
+      });
   },
 });
 

@@ -73,139 +73,127 @@ export const getFriendList = createAsyncThunk(
 const userSlice = createSlice({
   name: "users",
   initialState,
-  extraReducers: {
-    [sendFriendRequest.pending]: (state, action) => {
-      let newState = {
-        loading: true,
-      };
-      return newState;
-    },
-    [sendFriendRequest.fulfilled]: (state, action) => {
-      const { status = false, message = "" } = action?.payload || {};
-      if (status === "success") {
-        state["message"] = "Friend Request Sent Successfully!";
-      } else {
-        state["message"] = message;
-      }
+  extraReducers: (builder) => {
+    builder
+      .addCase(sendFriendRequest.pending, (state, action) => {
+        let newState = {
+          loading: true,
+        };
+        return newState;
+      })
+      .addCase(sendFriendRequest.fulfilled, (state, action) => {
+        const { status = false, message = "" } = action?.payload || {};
+        if (status === "success") {
+          state["message"] = "Friend Request Sent Successfully!";
+        } else {
+          state["message"] = message;
+        }
 
-      state["loading"] = false;
-    },
-    [sendFriendRequest.rejected]: (state, action) => {
-      let newState = {
-        message: "Failed to send friend request!",
-        error: action.payload?.error?.message,
-        loading: false,
-      };
-      return newState;
-    },
-
-    [getPendingFriendRequests.pending]: (state, action) => {
-      let newState = {
-        loading: true,
-      };
-      return newState;
-    },
-    [getPendingFriendRequests.fulfilled]: (state, action) => {
-      const {
-        status = false,
-        message = "",
-        data: pendingRequests = [],
-      } = action?.payload || {};
-      if (status === "success") {
-        state["pendingFriendRequests"] = pendingRequests;
-      } else {
-        state["message"] = message;
-      }
-
-      state["loading"] = false;
-    },
-    [getPendingFriendRequests.rejected]: (state, action) => {
-      let newState = {
-        message: "Failed to get pending friend requests!",
-        error: action.payload?.error?.message,
-        loading: false,
-      };
-      return newState;
-    },
-
-    [acceptFriendRequest.pending]: (state, action) => {
-      let newState = {
-        loading: true,
-      };
-      return newState;
-    },
-    [acceptFriendRequest.fulfilled]: (state, action) => {
-      const { status = false, message = "" } = action?.payload || {};
-      if (status === "success") {
-        state["message"] = "Friend Request Accepted Successfully!";
-      } else {
-        state["message"] = message;
-      }
-
-      state["loading"] = false;
-    },
-    [acceptFriendRequest.rejected]: (state, action) => {
-      let newState = {
-        message: "Failed to accept friend request!",
-        error: action.payload?.error?.message,
-        loading: false,
-      };
-      return newState;
-    },
-
-    [rejectFriendRequest.pending]: (state, action) => {
-      let newState = {
-        loading: true,
-      };
-      return newState;
-    },
-    [rejectFriendRequest.fulfilled]: (state, action) => {
-      const { status = false, message = "" } = action?.payload || {};
-      if (status === "success") {
-        state["message"] = "Friend Request Rejected Successfully!";
-      } else {
-        state["message"] = message;
-      }
-
-      state["loading"] = false;
-    },
-    [rejectFriendRequest.rejected]: (state, action) => {
-      let newState = {
-        message: "Failed to reject friend request!",
-        error: action.payload?.error?.message,
-        loading: false,
-      };
-      return newState;
-    },
-
-    [getFriendList.pending]: (state, action) => {
-      let newState = {
-        loading: true,
-      };
-      return newState;
-    },
-    [getFriendList.fulfilled]: (state, action) => {
-      const {
-        status = false,
-        message = "",
-        data: friendList = [],
-      } = action?.payload || {};
-      if (status === "success") {
-        state["friendList"] = friendList;
-      } else {
-        state["message"] = message;
-      }
-
-      state["loading"] = false;
-    },
-    [getFriendList.rejected]: (state, action) => {
-      let newState = {
-        message: "Failed to get friend list!",
-        error: action.payload?.error?.message,
-        loading: false,
-      };
-      return newState;
-    },
+        state["loading"] = false;
+      })
+      .addCase(sendFriendRequest.rejected, (state, action) => {
+        let newState = {
+          message: "Failed to send friend request!",
+          error: action.payload?.error?.message,
+          loading: false,
+        };
+        return newState;
+      })
+      .addCase(getPendingFriendRequests.pending, (state, action) => {
+        let newState = {
+          loading: true,
+        };
+        return newState;
+      })
+      .addCase(getPendingFriendRequests.fulfilled, (state, action) => {
+        const {
+          status = false, message = "", data: pendingRequests = [],
+        } = action?.payload || {};
+        if (status === "success") {
+          state["pendingFriendRequests"] = pendingRequests;
+        } else {
+          state["message"] = message;
+        }
+        state["loading"] = false;
+      })
+      .addCase(getPendingFriendRequests.rejected, (state, action) => {
+        let newState = {
+          message: "Failed to get pending friend requests!",
+          error: action.payload?.error?.message,
+          loading: false,
+        };
+        return newState;
+      })
+      .addCase(acceptFriendRequest.pending, (state, action) => {
+        let newState = {
+          loading: true,
+        };
+        return newState;
+      })
+      .addCase(acceptFriendRequest.fulfilled, (state, action) => {
+        const { status = false, message = "" } = action?.payload || {};
+        if (status === "success") {
+          state["message"] = "Friend Request Accepted Successfully!";
+        } else {
+          state["message"] = message;
+        }
+        state["loading"] = false;
+      })
+      .addCase(acceptFriendRequest.rejected, (state, action) => {
+        let newState = {
+          message: "Failed to accept friend request!",
+          error: action.payload?.error?.message,
+          loading: false,
+        };
+        return newState;
+      })
+      .addCase(rejectFriendRequest.pending, (state, action) => {
+        let newState = {
+          loading: true,
+        };
+        return newState;
+      })
+      .addCase(rejectFriendRequest.fulfilled, (state, action) => {
+        const { status = false, message = "" } = action?.payload || {};
+        if (status === "success") {
+          state["message"] = "Friend Request Rejected Successfully!";
+        } else {
+          state["message"] = message;
+        }
+        state["loading"] = false;
+      })
+      .addCase(rejectFriendRequest.rejected, (state, action) => {
+        let newState = {
+          message: "Failed to reject friend request!",
+          error: action.payload?.error?.message,
+          loading: false,
+        };
+        return newState;
+      })
+      .addCase(getFriendList.pending, (state, action) => {
+        let newState = {
+          loading: true,
+        };
+        return newState;
+      })
+      .addCase(getFriendList.fulfilled, (state, action) => {
+        const { status = false, message = "", data: friendList = [],
+        } = action?.payload || {};
+        if (status === "success") {
+          state["friendList"] = friendList;
+        } else {
+          state["message"] = message;
+        }
+        state["loading"] = false;
+      })
+      .addCase(getFriendList.rejected, (state, action) => {
+        let newState = {
+          message: "Failed to get friend list!",
+          error: action.payload?.error?.message,
+          loading: false,
+        };
+        return newState;
+      });
   },
 });
 

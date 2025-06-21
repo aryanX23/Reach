@@ -59,85 +59,86 @@ const loginSlice = createSlice({
       state.loginDetails.accessToken = action?.payload?.accessToken || "";
     },
   },
-  extraReducers: {
-    [loginUser.pending]: (state, action) => {
-      let newState = {
-        loginDetails: {
-          authenticated: false,
-          accessToken: "",
-          refreshToken: "",
-          error: false,
-        },
-        loading: true,
-      };
-      return newState;
-    },
-    [loginUser.fulfilled]: (state, action) => {
-      const {
-        ACCESS_TOKEN: accessToken = "",
-        REFRESH_TOKEN: refreshToken = "",
-        userId = "",
-        name = "",
-        email = "",
-        status = false,
-      } = action?.payload || {};
-      if (status === "success") {
-        state["loginDetails"] = {
-          authenticated: true,
-          accessToken,
-          refreshToken,
-          userInfo: {
-            userId,
-            name,
-            email,
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        let newState = {
+          loginDetails: {
+            authenticated: false,
+            accessToken: "",
+            refreshToken: "",
+            error: false,
           },
+          loading: true,
         };
-      }
-      state["loading"] = false;
-    },
-    [loginUser.rejected]: (state, action) => {
-      let newState = {
-        loginDetails: {
-          authenticated: false,
-          accessToken: "",
-          refreshToken: "",
-          error: action.payload?.error?.message,
-        },
-        loading: false,
-      };
-      return newState;
-    },
-    [registerUser.pending]: (state, action) => {
-      let newState = {
-        loading: true,
-      };
-      return newState;
-    },
-    [registerUser.fulfilled]: (state, action) => {
-      const { status = false, message = "" } = action?.payload || {};
-      if (status === "success") {
-        state["loginDetails"] = {
-          authenticated: false,
-          message,
+        return newState;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        const {
+          ACCESS_TOKEN: accessToken = "",
+          REFRESH_TOKEN: refreshToken = "",
+          userId = "",
+          name = "",
+          email = "",
+          status = false,
+        } = action?.payload || {};
+        if (status === "success") {
+          state["loginDetails"] = {
+            authenticated: true,
+            accessToken,
+            refreshToken,
+            userInfo: {
+              userId,
+              name,
+              email,
+            },
+          };
+        }
+        state["loading"] = false;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        let newState = {
+          loginDetails: {
+            authenticated: false,
+            accessToken: "",
+            refreshToken: "",
+            error: action.payload?.error?.message,
+          },
+          loading: false,
         };
-      }
-      state["loading"] = false;
-    },
-    [registerUser.rejected]: (state, action) => {
-      let newState = {
-        loginDetails: {
-          authenticated: false,
-          accessToken: "",
-          refreshToken: "",
-          error: action.payload?.error?.message,
-        },
-        loading: false,
-      };
-      return newState;
-    },
-    [logoutUser.fulfilled]: (state, action) => {
-      return initialState;
-    },
+        return newState;
+      })
+      .addCase(registerUser.pending, (state, action) => {
+        let newState = {
+          loading: true,
+        };
+        return newState;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        const { status = false, message = "" } = action?.payload || {};
+        if (status === "success") {
+          state["loginDetails"] = {
+            authenticated: false,
+            message,
+          };
+        }
+        state["loading"] = false;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        let newState = {
+          loginDetails: {
+            authenticated: false,
+            accessToken: "",
+            refreshToken: "",
+            error: action.payload?.error?.message,
+          },
+          loading: false,
+        };
+        return newState;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        return initialState;
+      });
   },
 });
 

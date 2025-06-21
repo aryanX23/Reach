@@ -12,7 +12,7 @@ import moment from "moment-timezone";
 import { SendHorizonal } from "lucide-react";
 
 import { useSocket } from "@/contexts/socketContext";
-import { modifyActiveConversationMessageMap } from "@/store/slices/conversationSlices";
+import { modifyActiveConversationMessageMap, setActiveConversation } from "@/store/slices/conversationSlices";
 
 const Message = ({ content, sender, time, attachments, timezone }) => {
   const parsedAndFormattedTime = useMemo(() => {
@@ -61,6 +61,9 @@ function ChatWindow() {
 
   const selectActiveConversationId =
     useSelector((state) => state.conversation.selectedConversationId) || "";
+  
+  const activeUserId = useSelector((state) => state.login.loginDetails.userInfo.userId) || "";
+  
   const activeConversationList =
     useSelector((state) => state.conversation.activeConversations) || [];
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,7 +162,7 @@ const activeMessageList = useMemo(() => {
         modifyActiveConversationMessageMap({
           message: {
             content: message.content,
-            sender: "other",
+            sender: (activeUserId === message.senderId) ? "self" : "other",
             time: message.time,
             timezone: message.timezone,
             roomId: message.roomId,
@@ -173,8 +176,9 @@ const activeMessageList = useMemo(() => {
       socket.emit("leave-room", { roomId: selectActiveConversationId });
       socket.off("receive-message");
       socket.disconnect();
+      dispatch(setActiveConversation(null));
     };
-  }, [selectActiveConversationId, activeConversation, socket, dispatch]);
+  }, [selectActiveConversationId, activeConversation, socket, dispatch, activeUserId]);
 
   return (
     <div className="flex-1 flex flex-col">
