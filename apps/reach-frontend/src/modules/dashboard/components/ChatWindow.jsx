@@ -61,9 +61,9 @@ function ChatWindow() {
 
   const selectActiveConversationId =
     useSelector((state) => state.conversation.selectedConversationId) || "";
-  
+
   const activeUserId = useSelector((state) => state.login.loginDetails.userInfo.userId) || "";
-  
+
   const activeConversationList =
     useSelector((state) => state.conversation.activeConversations) || [];
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,17 +77,17 @@ function ChatWindow() {
   }, [selectActiveConversationId]);
 
   const activeConversationMap =
-  useSelector((state) => state.conversation.activeConversationMessageMap);
+    useSelector((state) => state.conversation.activeConversationMessageMap);
 
-// FIX & OPTIMIZATION: Memoize the list derivation and ensure data is a Map
-const activeMessageList = useMemo(() => {
-  // If the stored data is not a Map (e.g., after rehydration), convert it.
-  if (activeConversationMap && !(activeConversationMap instanceof Map)) {
-    return new Map(Object.entries(activeConversationMap)).get(selectActiveConversationId) || [];
-  }
-  return activeConversationMap?.get(selectActiveConversationId) || [];
-}, [activeConversationMap, selectActiveConversationId]);
-  
+  // FIX & OPTIMIZATION: Memoize the list derivation and ensure data is a Map
+  const activeMessageList = useMemo(() => {
+    // If the stored data is not a Map (e.g., after rehydration), convert it.
+    if (activeConversationMap && !(activeConversationMap instanceof Map)) {
+      return new Map(Object.entries(activeConversationMap)).get(selectActiveConversationId) || [];
+    }
+    return activeConversationMap?.get(selectActiveConversationId) || [];
+  }, [activeConversationMap, selectActiveConversationId]);
+
   const userId =
     useSelector((state) => state.login?.loginDetails?.userInfo?.userId) || "";
 
@@ -111,7 +111,7 @@ const activeMessageList = useMemo(() => {
     (message = {}) => {
       if (isEmpty(socket) || isEmpty(selectActiveConversationId)) return;
 
-      socket.emit("send-message", {
+      socket.emit("send-chat-message", {
         roomId: selectActiveConversationId,
         content: message,
       });
@@ -156,7 +156,9 @@ const activeMessageList = useMemo(() => {
       return;
     }
 
-    socket.on("receive-message", (message = {}) => {
+    socket.emit("join-chat-room", { roomId: selectActiveConversationId });
+
+    socket.on("receive-chat-message", (message = {}) => {
       console.log("Message received from server -> ", message);
       dispatch(
         modifyActiveConversationMessageMap({
@@ -173,10 +175,8 @@ const activeMessageList = useMemo(() => {
     });
 
     return () => {
-      socket.emit("leave-room", { roomId: selectActiveConversationId });
-      socket.off("receive-message");
-      socket.disconnect();
-      dispatch(setActiveConversation(null));
+      socket.emit("leave-chat-room", { roomId: selectActiveConversationId });
+      socket.off("receive-chat-message");
     };
   }, [selectActiveConversationId, activeConversation, socket, dispatch, activeUserId]);
 

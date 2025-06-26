@@ -1,7 +1,7 @@
 require("dotenv").config();
 const http = require("http");
 
-const { connectDatabase, setupExpress, SocketService } = require("./services");
+const { connectDatabase, setupExpress, SocketService, kafkaService } = require("./services");
 
 const { PORT = 8000 } = process.env || {};
 // Package Import and variable initializations
@@ -21,14 +21,16 @@ db.once("open", async () => {
     const socketService = new SocketService(server);
     socketService._io.attach(server);
 
+    await kafkaService.connect();
+
     server.listen(PORT, () => {
       console.log(`Server is listening on port ${PORT}!`);
+      console.log(`Connected to DB!`);
+      socketService.initListeners();
     });
-
-    console.log(`Connected to DB!`);
-    socketService.initListeners();
   } catch (err) {
     console.log("Error in startup configuration ->", err);
+    kafkaService.disconnect();
     process.exit(1);
   }
 });

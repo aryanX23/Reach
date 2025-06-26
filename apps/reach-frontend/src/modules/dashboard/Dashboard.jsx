@@ -10,10 +10,7 @@ import FriendList from "./components/FriendList";
 import { SocketProvider } from "@/contexts/socketContext";
 
 function Dashboard() {
-  const activeConversationList =
-    useSelector((state) => state.conversation.activeConversations) || [];
-
-  const conversationIdList = activeConversationList.map((conv) => conv.conversationId) || [];
+ const activeUserId = useSelector((state) => state.login.loginDetails.userInfo.userId) || "";
   
   const [activeTab, setActiveTab] = useState(1);
 
@@ -21,7 +18,7 @@ function Dashboard() {
     <div className="flex h-screen bg-gray-100">
       <SocketProvider
         namespace="/chat-room"
-        rooms={conversationIdList}
+        userId={activeUserId}
       >
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         <div className="flex-1 flex">

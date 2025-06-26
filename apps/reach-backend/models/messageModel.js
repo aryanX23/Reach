@@ -14,10 +14,6 @@ const messageSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    receiverId: {
-      type: String,
-      required: true,
-    },
     type: {
       type: String,
       required: true,
@@ -43,6 +39,12 @@ const messageSchema = mongoose.Schema(
       deletedAt: {
         type: Date,
       },
+    },
+    messageTime: {
+      type: Date,
+    },
+    messageTimezone: {
+      type: String,
     },
   },
   {
