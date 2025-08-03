@@ -48,14 +48,14 @@ const RequestList = () => {
   }, [dispatch]);
 
   return (
-    <div className="w-80 bg-white border-r">
+    <div className="w-full md:w-80 bg-white border-r">
       <div className="p-4 border-b flex justify-between items-center">
         <h2 className="text-xl font-semibold">Friend List</h2>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger className="text-blue-500 text-1xl font-medium">
             Add Friends
           </PopoverTrigger>
-          <PopoverContent className="w-96 bg-white shadow-lg rounded-lg p-6 border border-gray-200">
+          <PopoverContent className="w-full md:w-96 bg-white shadow-lg rounded-lg p-6 border border-gray-200">
             <div className="space-y-4">
               <div>
                 <label
@@ -85,7 +85,7 @@ const RequestList = () => {
           </PopoverContent>
         </Popover>
       </div>
-      <div className="overflow-y-auto h-[calc(100vh-60px)]">
+      <div className="overflow-y-auto h-[calc(100vh-120px)] md:h-[calc(100vh-60px)]">
         {friendList.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 bg-white rounded-lg shadow-lg border border-gray-200">
             <svg

@@ -22,28 +22,32 @@ function Sidebar(props) {
   };
 
   return (
-    <div className="w-16 bg-white h-screen border-r flex flex-col items-center py-4">
-      <div className="mb-8">
+    <div className="w-16 bg-white md:h-screen border-r flex flex-col items-center py-4">
+      <div className="mb-8 hidden md:block">
         <div className="w-8 h-8 text-white flex items-center justify-center font-bold">
           <img src="/images/logo2.png" alt="logo" />
         </div>
       </div>
-      <SidebarIcon
-        icon={<MessageCircle />}
-        active={activeTab === 1}
-        onClick={() => setActiveTab(1)}
-      />
-      <SidebarIcon
-        icon={<Contact />}
-        active={activeTab === 2}
-        onClick={() => setActiveTab(2)}
-      />
-      <SidebarIcon
-        icon={<BellPlus />}
-        active={activeTab === 3}
-        onClick={() => setActiveTab(3)}
-      />
-      <SidebarIcon icon={<LogOut />} onClick={handleLogout} />
+      <div className="flex flex-col">
+        <SidebarIcon
+          icon={<MessageCircle />}
+          active={activeTab === 1}
+          onClick={() => setActiveTab(1)}
+        />
+        <SidebarIcon
+          icon={<Contact />}
+          active={activeTab === 2}
+          onClick={() => setActiveTab(2)}
+        />
+        <SidebarIcon
+          icon={<BellPlus />}
+          active={activeTab === 3}
+          onClick={() => setActiveTab(3)}
+        />
+      </div>
+      <div className="mt-auto">
+        <SidebarIcon icon={<LogOut />} onClick={handleLogout} />
+      </div>
     </div>
   );
 }

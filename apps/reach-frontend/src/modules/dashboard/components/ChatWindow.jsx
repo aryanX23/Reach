@@ -9,7 +9,7 @@ import React, {
 import { useSelector, useDispatch } from "react-redux";
 import { isEmpty } from "lodash";
 import moment from "moment-timezone";
-import { SendHorizonal } from "lucide-react";
+import { SendHorizonal, ArrowLeft } from "lucide-react";
 
 import { useSocket } from "@/contexts/socketContext";
 import { getMessagesForConversation, modifyActiveConversationMessageMap, setActiveConversation } from "@/store/slices/conversationSlices";
@@ -204,6 +204,12 @@ function ChatWindow() {
       ) : (
         <>
           <div className="bg-white border-b flex items-center px-4 py-3">
+            <button
+              className="md:hidden mr-4"
+              onClick={() => dispatch(setActiveConversation(""))}
+            >
+              <ArrowLeft />
+            </button>
             <img
               src={
                 activeConversation?.user?.avatar ||
