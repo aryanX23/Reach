@@ -12,7 +12,7 @@ import moment from "moment-timezone";
 import { SendHorizonal } from "lucide-react";
 
 import { useSocket } from "@/contexts/socketContext";
-import { modifyActiveConversationMessageMap, setActiveConversation } from "@/store/slices/conversationSlices";
+import { getMessagesForConversation, modifyActiveConversationMessageMap, setActiveConversation } from "@/store/slices/conversationSlices";
 
 const Message = ({ content, sender, time, attachments, timezone }) => {
   const parsedAndFormattedTime = useMemo(() => {
@@ -173,6 +173,23 @@ function ChatWindow() {
         }),
       );
     });
+
+    if (activeMessageList.length === 0) {
+      console.log("Fetching messages for the first time...");
+      dispatch(getMessagesForConversation({
+        conversationId: selectActiveConversationId,
+        messageRange: "24_hour",
+        messageFetchDirection: "older",
+      }));
+    } else {
+      console.log("Fetching more messages...");
+      dispatch(getMessagesForConversation({
+        conversationId: selectActiveConversationId,
+        messageRange: "all",
+        messageFetchDirection: "newer",
+        lastMessageTimestamp: activeMessageList[activeMessageList.length - 1]?.time,
+      }));
+    }
 
     return () => {
       socket.emit("leave-chat-room", { roomId: selectActiveConversationId });

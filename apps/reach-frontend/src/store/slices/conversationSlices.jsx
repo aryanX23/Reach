@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import ConversationService from "@/services/conversationServices";
+import MessagesService from "@/services/messagesService";
 
 const initialState = {
   loading: false,
@@ -16,6 +17,24 @@ export const getActiveConversations = createAsyncThunk(
   async (body, { rejectWithValue }) => {
     try {
       const res = await ConversationService.getActiveConversations();
+      return res;
+    } catch (e) {
+      return rejectWithValue(e?.response?.data);
+    }
+  },
+);
+
+export const getMessagesForConversation = createAsyncThunk(
+  "conversations/getMessagesForConversation",
+  async ({ conversationId, messageRange, messageFetchDirection, lastMessageTimestamp }, { rejectWithValue }) => {
+    try {
+      const res = await MessagesService.getMessageForConversation({
+        conversationId,
+        messageRange,
+        messageFetchDirection,
+        lastMessageTimestamp,
+      });
+
       return res;
     } catch (e) {
       return rejectWithValue(e?.response?.data);
@@ -63,7 +82,38 @@ const conversationSlices = createSlice({
         state["message"] = "Failed to get active conversations!";
         state["error"] = action.payload?.error?.message;
         state["loading"] = false;
-      });
+      })
+      .addCase(getMessagesForConversation.pending, (state) => {
+        state["loading"] = true;
+      })
+      .addCase(getMessagesForConversation.fulfilled, (state, action) => {
+        const { message = "", data = {} } = action?.payload || {};
+        state["message"] = message;
+        state["loading"] = false;
+
+        const { conversationId, messages = [], messageRange, messageFetchDirection, lastMessageTimestamp } = data?.data || {};
+        if (conversationId) {
+          const map = state.activeConversationMessageMap instanceof Map
+            ? state.activeConversationMessageMap
+            : new Map(Object.entries(state.activeConversationMessageMap));
+
+          let existingMessageArr = map.get(conversationId) || [];
+
+          if (messageFetchDirection === "newer") {
+            existingMessageArr.push(...messages);
+          } else {
+            existingMessageArr = [...messages, ...existingMessageArr];
+          }
+          map.set(conversationId, existingMessageArr);
+          state["activeConversationMessageMap"] = map;
+        }
+      })
+      .addCase(getMessagesForConversation.rejected, (state, action) => {
+        state["message"] = "Failed to get messages for conversation!";
+        state["error"] = action.payload?.error?.message;
+        state["loading"] = false;
+      }
+      );
   },
 });
 
